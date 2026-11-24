@@ -1,0 +1,114 @@
+{
+  "events": [
+    {
+      "at": "2026-11-24T08:03:00Z",
+      "evidenceId": "EV-TAMM-001",
+      "ticketIds": [
+        "TKT-TAMM-001"
+      ],
+      "title": "Organic typo-squat search result",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:04:00Z",
+      "evidenceId": "EV-TAMM-002",
+      "ticketIds": [
+        "TKT-TAMM-001"
+      ],
+      "title": "Archived bilingual fee-page capture",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:05:00Z",
+      "evidenceId": "EV-TAMM-003",
+      "ticketIds": [
+        "TKT-TAMM-001"
+      ],
+      "title": "Cedar Spire public portfolio archive",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:07:00Z",
+      "evidenceId": "EV-LI-001",
+      "ticketIds": [
+        "TKT-LI-002"
+      ],
+      "title": "Public LinkedIn job-post capture",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:08:00Z",
+      "evidenceId": "EV-LI-002",
+      "ticketIds": [
+        "TKT-LI-002"
+      ],
+      "title": "Static job landing-page archive",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:09:00Z",
+      "evidenceId": "EV-LI-003",
+      "ticketIds": [
+        "TKT-LI-002"
+      ],
+      "title": "Public advertiser transparency disclosure",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:12:00Z",
+      "evidenceId": "EV-MKT-001",
+      "ticketIds": [
+        "TKT-MARKET-003"
+      ],
+      "title": "Marketplace seller listing capture",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:13:00Z",
+      "evidenceId": "EV-MKT-002",
+      "ticketIds": [
+        "TKT-MARKET-003"
+      ],
+      "title": "Public trade-licence directory record",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:14:00Z",
+      "evidenceId": "EV-MKT-003",
+      "ticketIds": [
+        "TKT-MARKET-003"
+      ],
+      "title": "Marketplace public seller and fulfilment terms",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:15:00Z",
+      "evidenceId": "EV-DIR-001",
+      "ticketIds": [
+        "TKT-MARKET-003",
+        "TKT-MAPS-004"
+      ],
+      "title": "Independent public directory links Cedar Spire and Dune",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:18:00Z",
+      "evidenceId": "EV-MAPS-001",
+      "ticketIds": [
+        "TKT-MAPS-004"
+      ],
+      "title": "Public Maps-style recovery listing",
+      "type": "evidence_available"
+    },
+    {
+      "at": "2026-11-24T08:19:00Z",
+      "evidenceId": "EV-MAPS-002",
+      "ticketIds": [
+        "TKT-MAPS-004"
+      ],
+      "title": "Archived recovery-site terms",
+      "type": "evidence_available"
+    }
+  ],
+  "purpose": "public OSINT demo fixture schedule only"
+}

@@ -1,0 +1,557 @@
+{
+  "entities": [
+    {
+      "attributes": {
+        "fictional": true
+      },
+      "id": "ENT-ORG-CSP-01",
+      "kind": "company",
+      "label": "Cedar Spire Services FZE",
+      "observedAt": "2026-11-24T08:00:00Z",
+      "provenance": [
+        {
+          "evidenceId": "EV-TAMM-003"
+        },
+        {
+          "evidenceId": "EV-LI-003"
+        },
+        {
+          "evidenceId": "EV-MKT-002"
+        },
+        {
+          "evidenceId": "EV-DIR-001"
+        }
+      ],
+      "revision": 1,
+      "support": "observed",
+      "uncertainty": null
+    },
+    {
+      "attributes": {
+        "fictional": true
+      },
+      "id": "ENT-ORG-DUNE-01",
+      "kind": "company",
+      "label": "Dune Fulfilment LLC",
+      "observedAt": "2026-11-24T08:00:00Z",
+      "provenance": [
+        {
+          "evidenceId": "EV-MKT-003"
+        },
+        {
+          "evidenceId": "EV-DIR-001"
+        },
+        {
+          "evidenceId": "EV-MAPS-002"
+        }
+      ],
+      "revision": 1,
+      "support": "observed",
+      "uncertainty": null
+    },
+    {
+      "attributes": {
+        "fictional": true
+      },
+      "id": "ENT-URL-TAMM-01",
+      "kind": "url",
+      "label": "TAMM typo-squat archive reference",
+      "observedAt": "2026-11-24T08:00:00Z",
+      "provenance": [
+        {
+          "evidenceId": "EV-TAMM-001"
+        },
+        {
+          "evidenceId": "EV-TAMM-002"
+        },
+        {
+          "evidenceId": "EV-TAMM-003"
+        }
+      ],
+      "revision": 1,
+      "support": "observed",
+      "uncertainty": null
+    },
+    {
+      "attributes": {
+        "fictional": true
+      },
+      "id": "ENT-URL-LI-01",
+      "kind": "url",
+      "label": "AED 20,000/month job landing capture",
+      "observedAt": "2026-11-24T08:00:00Z",
+      "provenance": [
+        {
+          "evidenceId": "EV-LI-001"
+        },
+        {
+          "evidenceId": "EV-LI-002"
+        }
+      ],
+      "revision": 1,
+      "support": "observed",
+      "uncertainty": null
+    },
+    {
+      "attributes": {
+        "fictional": true
+      },
+      "id": "ENT-MARKET-LISTING-01",
+      "kind": "marketplace_listing",
+      "label": "Cedar Select marketplace listing",
+      "observedAt": "2026-11-24T08:00:00Z",
+      "provenance": [
+        {
+          "evidenceId": "EV-MKT-001"
+        },
+        {
+          "evidenceId": "EV-MKT-002"
+        }
+      ],
+      "revision": 1,
+      "support": "observed",
+      "uncertainty": null
+    },
+    {
+      "attributes": {
+        "fictional": true
+      },
+      "id": "ENT-URL-RECOVERY-01",
+      "kind": "url",
+      "label": "Recovery service archive reference",
+      "observedAt": "2026-11-24T08:00:00Z",
+      "provenance": [
+        {
+          "evidenceId": "EV-MAPS-001"
+        },
+        {
+          "evidenceId": "EV-MAPS-002"
+        }
+      ],
+      "revision": 1,
+      "support": "observed",
+      "uncertainty": null
+    }
+  ],
+  "generatedForDate": "2026-11-24",
+  "relationships": [
+    {
+      "evidenceIds": [
+        "EV-TAMM-001",
+        "EV-TAMM-002",
+        "EV-TAMM-003"
+      ],
+      "fromEntityId": "ENT-URL-TAMM-01",
+      "id": "REL-TAMM-SEARCH-ARCHIVE",
+      "kind": "portfolio_reference",
+      "observedAt": "2026-11-24T08:20:00Z",
+      "rationale": "The organic result leads to an archived page whose host and project reference appear in Cedar Spire's public portfolio; this is an organization-level public link.",
+      "revision": 1,
+      "support": "observed",
+      "toEntityId": "ENT-ORG-CSP-01"
+    },
+    {
+      "evidenceIds": [
+        "EV-LI-001",
+        "EV-LI-002",
+        "EV-LI-003"
+      ],
+      "fromEntityId": "ENT-URL-LI-01",
+      "id": "REL-LI-ADVERTISER-CSP",
+      "kind": "public_advertiser_disclosure",
+      "observedAt": "2026-11-24T08:20:00Z",
+      "rationale": "The public disclosure names Cedar Spire as advertiser for the post; individual authorship and intent remain unknown.",
+      "revision": 1,
+      "support": "observed",
+      "toEntityId": "ENT-ORG-CSP-01"
+    },
+    {
+      "evidenceIds": [
+        "EV-MKT-001",
+        "EV-MKT-003"
+      ],
+      "fromEntityId": "ENT-MARKET-LISTING-01",
+      "id": "REL-MKT-TERMS-DUNE",
+      "kind": "public_fulfilment_terms",
+      "observedAt": "2026-11-24T08:20:00Z",
+      "rationale": "Marketplace terms name Dune as fulfilment operator; the seller/licence mismatch is not itself evidence of a completed sale.",
+      "revision": 1,
+      "support": "observed",
+      "toEntityId": "ENT-ORG-DUNE-01"
+    },
+    {
+      "evidenceIds": [
+        "EV-MKT-002",
+        "EV-DIR-001"
+      ],
+      "fromEntityId": "ENT-ORG-DUNE-01",
+      "id": "REL-DUNE-CSP-DIRECTORY",
+      "kind": "public_business_directory_link",
+      "observedAt": "2026-11-24T08:20:00Z",
+      "rationale": "An independent public directory connects Cedar Spire's Cedar Select programme and Dune's fulfilment role.",
+      "revision": 1,
+      "support": "observed",
+      "toEntityId": "ENT-ORG-CSP-01"
+    },
+    {
+      "evidenceIds": [
+        "EV-MAPS-001",
+        "EV-MAPS-002"
+      ],
+      "fromEntityId": "ENT-URL-RECOVERY-01",
+      "id": "REL-MAPS-TERMS-DUNE",
+      "kind": "public_site_terms",
+      "observedAt": "2026-11-24T08:20:00Z",
+      "rationale": "The public Maps-style capture points to archived site terms that name Dune as fulfilment company.",
+      "revision": 1,
+      "support": "observed",
+      "toEntityId": "ENT-ORG-DUNE-01"
+    }
+  ],
+  "revision": 1,
+  "tickets": [
+    {
+      "blocks": [
+        {
+          "id": "BLK-TKT-TAMM-001-REPORT",
+          "text": "# Organic TAMM typo-squat result\n\n**Ticket:** `TKT-TAMM-001`  \n**Risk score:** **90/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-27\n\n## Assessment\n\nAn organic search capture led to an archived bilingual traffic-fee page on a typo-squat host. A public Cedar Spire portfolio archive references the same project host. These public records support a company-level association, not individual attribution or intent.\n\n## Why it is prioritized\n\nOrganic typo-squat result and bilingual service prompt (EV-TAMM-001, EV-TAMM-002); matching public portfolio reference (EV-TAMM-003).\n\n## What remains unknown\n\nNo paid ad, private provider return, payment record, victim record, or individual operator evidence is present. The public portfolio link does not establish knowledge or wrongdoing.\n\n## Public evidence\n\n- [EV-TAMM-001](/api/v1/assets/EV-TAMM-001) — Organic typo-squat search result\n- [EV-TAMM-002](/api/v1/assets/EV-TAMM-002) — Archived bilingual fee-page capture\n- [EV-TAMM-003](/api/v1/assets/EV-TAMM-003) — Cedar Spire public portfolio archive\n",
+          "type": "markdown"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "3c6b80c7470d3acbaa9465aad5c8527ffea78f580b787178889275831481b96f",
+            "url": "/api/v1/assets/EV-TAMM-001"
+          },
+          "capturedAt": "2026-11-24T08:03:00Z",
+          "collectionMethod": "static_organic_result_capture",
+          "evidenceId": "EV-TAMM-001",
+          "id": "BLK-EV-TAMM-001",
+          "language": "en",
+          "sourceReference": "https://search.example.test/results?q=tamm+fees",
+          "summary": "An organic result for a misspelled TAMM fee query points to an unrelated reserved `.test` host. No paid placement or ad account is shown.",
+          "support": "observed",
+          "title": "Organic typo-squat search result",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "5b9c0bd55156167cb8af2c47be3972a5f502612f9bebe4b2648fb4fdd770ba17",
+            "url": "/api/v1/assets/EV-TAMM-002"
+          },
+          "capturedAt": "2026-11-24T08:04:00Z",
+          "collectionMethod": "static_archive_text_capture",
+          "evidenceId": "EV-TAMM-002",
+          "id": "BLK-EV-TAMM-002",
+          "language": "en-ar",
+          "sourceReference": "https://archive.example.test/captures/tamm-fees-01",
+          "summary": "The archived static page uses bilingual traffic-fine and UAE PASS wording and a host that differs from the fictional government reference. No form, credential field, or payment control is present.",
+          "support": "observed",
+          "title": "Archived bilingual fee-page capture",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "bcabf9cdb771da7be5f16718a0aaa4c9e42ea867799a26d2fc3d7b2f13a1efa8",
+            "url": "/api/v1/assets/EV-TAMM-003"
+          },
+          "capturedAt": "2026-11-24T08:05:00Z",
+          "collectionMethod": "static_public_portfolio_capture",
+          "evidenceId": "EV-TAMM-003",
+          "id": "BLK-EV-TAMM-003",
+          "language": "en",
+          "sourceReference": "https://portfolio.example.test/cedar-spire/projects/service-notices",
+          "summary": "A public portfolio archive lists the same `tamm-fees.example.test` project reference and a matching project title. This links the archived page to the public portfolio entity, without identifying an individual operator.",
+          "support": "observed",
+          "title": "Cedar Spire public portfolio archive",
+          "type": "evidence"
+        }
+      ],
+      "closingDate": "2026-11-27",
+      "createdAt": "2026-11-24T08:03:00Z",
+      "entityIds": [
+        "ENT-URL-TAMM-01",
+        "ENT-ORG-CSP-01"
+      ],
+      "evidenceIds": [
+        "EV-TAMM-001",
+        "EV-TAMM-002",
+        "EV-TAMM-003"
+      ],
+      "id": "TKT-TAMM-001",
+      "relationshipIds": [
+        "REL-TAMM-SEARCH-ARCHIVE"
+      ],
+      "reportMarkdown": "# Organic TAMM typo-squat result\n\n**Ticket:** `TKT-TAMM-001`  \n**Risk score:** **90/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-27\n\n## Assessment\n\nAn organic search capture led to an archived bilingual traffic-fee page on a typo-squat host. A public Cedar Spire portfolio archive references the same project host. These public records support a company-level association, not individual attribution or intent.\n\n## Why it is prioritized\n\nOrganic typo-squat result and bilingual service prompt (EV-TAMM-001, EV-TAMM-002); matching public portfolio reference (EV-TAMM-003).\n\n## What remains unknown\n\nNo paid ad, private provider return, payment record, victim record, or individual operator evidence is present. The public portfolio link does not establish knowledge or wrongdoing.\n\n## Public evidence\n\n- [EV-TAMM-001](/api/v1/assets/EV-TAMM-001) — Organic typo-squat search result\n- [EV-TAMM-002](/api/v1/assets/EV-TAMM-002) — Archived bilingual fee-page capture\n- [EV-TAMM-003](/api/v1/assets/EV-TAMM-003) — Cedar Spire public portfolio archive\n",
+      "revision": 1,
+      "status": "open",
+      "title": "Organic TAMM typo-squat result",
+      "updatedAt": "2026-11-24T08:05:00Z"
+    },
+    {
+      "blocks": [
+        {
+          "id": "BLK-TKT-LI-002-REPORT",
+          "text": "# High-pay vague-duty job post\n\n**Ticket:** `TKT-LI-002`  \n**Risk score:** **58/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-28\n\n## Assessment\n\nA public LinkedIn-style job post offers AED 20,000/month for vague duties. A public advertiser disclosure names Cedar Spire. Salary and vague duties are triage signals only; no applicant harm is established.\n\n## Why it is prioritized\n\nPublic post and static landing capture (EV-LI-001, EV-LI-002); public advertiser transparency disclosure (EV-LI-003).\n\n## What remains unknown\n\nNo victim, payment, complaint, or verified individual recruiter is recorded. The ad disclosure ties the campaign to an organization, not a person or intent.\n\n## Public evidence\n\n- [EV-LI-001](/api/v1/assets/EV-LI-001) — Public LinkedIn job-post capture\n- [EV-LI-002](/api/v1/assets/EV-LI-002) — Static job landing-page archive\n- [EV-LI-003](/api/v1/assets/EV-LI-003) — Public advertiser transparency disclosure\n",
+          "type": "markdown"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "612b02cc78f3724c221dffcbd396ed7ee23d9227c694c34039a9eb55f46135c7",
+            "url": "/api/v1/assets/EV-LI-001"
+          },
+          "capturedAt": "2026-11-24T08:07:00Z",
+          "collectionMethod": "static_public_post_capture",
+          "evidenceId": "EV-LI-001",
+          "id": "BLK-EV-LI-001",
+          "language": "en",
+          "sourceReference": "https://social.example.test/posts/role-204",
+          "summary": "A fictional public job post offers AED 20,000 per month for vague duties and links to a static landing page. It is a warning signal only.",
+          "support": "observed",
+          "title": "Public LinkedIn job-post capture",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "d1e8bfa694698e5ac5406654275cf3070d355122ab41a06c5709983f8d500ff4",
+            "url": "/api/v1/assets/EV-LI-002"
+          },
+          "capturedAt": "2026-11-24T08:08:00Z",
+          "collectionMethod": "static_archive_text_capture",
+          "evidenceId": "EV-LI-002",
+          "id": "BLK-EV-LI-002",
+          "language": "en",
+          "sourceReference": "https://archive.example.test/captures/csp-role-02",
+          "summary": "The landing capture repeats the salary and vague duties. It contains no application, login, fee, or contact interaction.",
+          "support": "observed",
+          "title": "Static job landing-page archive",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "c447d60511dd3ce6438c1e1db4ee4aa648b32d6f0990de96d79cfabbbc9ec954",
+            "url": "/api/v1/assets/EV-LI-003"
+          },
+          "capturedAt": "2026-11-24T08:09:00Z",
+          "collectionMethod": "static_public_ad_disclosure_capture",
+          "evidenceId": "EV-LI-003",
+          "id": "BLK-EV-LI-003",
+          "language": "en",
+          "sourceReference": "https://ads.example.test/library/disclosure/csp-role-02",
+          "summary": "A public advertiser disclosure names Cedar Spire Services FZE as the disclosed advertiser for the captured job post and references its archive ID.",
+          "support": "observed",
+          "title": "Public advertiser transparency disclosure",
+          "type": "evidence"
+        }
+      ],
+      "closingDate": "2026-11-28",
+      "createdAt": "2026-11-24T08:07:00Z",
+      "entityIds": [
+        "ENT-URL-LI-01",
+        "ENT-ORG-CSP-01"
+      ],
+      "evidenceIds": [
+        "EV-LI-001",
+        "EV-LI-002",
+        "EV-LI-003"
+      ],
+      "id": "TKT-LI-002",
+      "relationshipIds": [
+        "REL-LI-ADVERTISER-CSP"
+      ],
+      "reportMarkdown": "# High-pay vague-duty job post\n\n**Ticket:** `TKT-LI-002`  \n**Risk score:** **58/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-28\n\n## Assessment\n\nA public LinkedIn-style job post offers AED 20,000/month for vague duties. A public advertiser disclosure names Cedar Spire. Salary and vague duties are triage signals only; no applicant harm is established.\n\n## Why it is prioritized\n\nPublic post and static landing capture (EV-LI-001, EV-LI-002); public advertiser transparency disclosure (EV-LI-003).\n\n## What remains unknown\n\nNo victim, payment, complaint, or verified individual recruiter is recorded. The ad disclosure ties the campaign to an organization, not a person or intent.\n\n## Public evidence\n\n- [EV-LI-001](/api/v1/assets/EV-LI-001) — Public LinkedIn job-post capture\n- [EV-LI-002](/api/v1/assets/EV-LI-002) — Static job landing-page archive\n- [EV-LI-003](/api/v1/assets/EV-LI-003) — Public advertiser transparency disclosure\n",
+      "revision": 1,
+      "status": "open",
+      "title": "High-pay vague-duty job post",
+      "updatedAt": "2026-11-24T08:09:00Z"
+    },
+    {
+      "blocks": [
+        {
+          "id": "BLK-TKT-MARKET-003-REPORT",
+          "text": "# Marketplace seller licence mismatch\n\n**Ticket:** `TKT-MARKET-003`  \n**Risk score:** **76/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-29\n\n## Assessment\n\nA marketplace listing shows a seller/licence-category mismatch. Public marketplace terms name Dune Fulfilment, and an independent directory links Dune's fulfilment role to Cedar Spire's Cedar Select programme. The relationship is evidence of a public business connection, not proof of a completed sale or fraud.\n\n## Why it is prioritized\n\nSeller listing and public activity directory mismatch (EV-MKT-001, EV-MKT-002); public marketplace fulfilment terms (EV-MKT-003); independent business directory corroboration (EV-DIR-001).\n\n## What remains unknown\n\nNo private seller data, order history, payments, customer identities, or fulfilment event is included. Licensing mismatch can have benign explanations and needs verification.\n\n## Public evidence\n\n- [EV-MKT-001](/api/v1/assets/EV-MKT-001) — Marketplace seller listing capture\n- [EV-MKT-002](/api/v1/assets/EV-MKT-002) — Public trade-licence directory record\n- [EV-MKT-003](/api/v1/assets/EV-MKT-003) — Marketplace public seller and fulfilment terms\n- [EV-DIR-001](/api/v1/assets/EV-DIR-001) — Independent public directory links Cedar Spire and Dune\n",
+          "type": "markdown"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "0c06df1cdfe22dad0c60b6b60486510dcb1c1dbe3aec7ae2e64a7f746d6b4241",
+            "url": "/api/v1/assets/EV-MKT-001"
+          },
+          "capturedAt": "2026-11-24T08:12:00Z",
+          "collectionMethod": "static_public_listing_capture",
+          "evidenceId": "EV-MKT-001",
+          "id": "BLK-EV-MKT-001",
+          "language": "en",
+          "sourceReference": "https://market.example.test/listings/seller-88/item-12",
+          "summary": "A public marketplace listing uses seller label Cedar Select and displays a trade-licence category that does not match the separately captured registry activity category.",
+          "support": "observed",
+          "title": "Marketplace seller listing capture",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "241c224aa29518e1a0344b6180b3bdd566915444376b99588db9029055cfbe01",
+            "url": "/api/v1/assets/EV-MKT-002"
+          },
+          "capturedAt": "2026-11-24T08:13:00Z",
+          "collectionMethod": "static_public_directory_capture",
+          "evidenceId": "EV-MKT-002",
+          "id": "BLK-EV-MKT-002",
+          "language": "en",
+          "sourceReference": "https://directory.example.test/entities/cedar-spire",
+          "summary": "The public directory record for Cedar Spire lists a consultancy activity category and a public trading-name reference, Cedar Select. This corroborates the visible seller/licence mismatch while leaving authorization and fulfilment unresolved.",
+          "support": "observed",
+          "title": "Public trade-licence directory record",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "39224dcfe64053f67ad059dc1412d63af066bdcd5f56b69777e6517c7adf2d46",
+            "url": "/api/v1/assets/EV-MKT-003"
+          },
+          "capturedAt": "2026-11-24T08:14:00Z",
+          "collectionMethod": "static_public_terms_capture",
+          "evidenceId": "EV-MKT-003",
+          "id": "BLK-EV-MKT-003",
+          "language": "en",
+          "sourceReference": "https://market.example.test/policies/seller-fulfilment",
+          "summary": "The marketplace's public terms name Dune Fulfilment LLC as the fulfilment operator for the captured seller programme and explain that seller and fulfilment roles may differ.",
+          "support": "observed",
+          "title": "Marketplace public seller and fulfilment terms",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "ee378cd235d6bd97aeddecf37e7dbcfd6863e86480528a87bb6d8518109fa6bb",
+            "url": "/api/v1/assets/EV-DIR-001"
+          },
+          "capturedAt": "2026-11-24T08:15:00Z",
+          "collectionMethod": "static_public_directory_capture",
+          "evidenceId": "EV-DIR-001",
+          "id": "BLK-EV-DIR-001",
+          "language": "en",
+          "sourceReference": "https://directory.example.test/partners/dune-cedar",
+          "summary": "An independent public business directory lists Cedar Spire's Cedar Select programme and Dune Fulfilment LLC under the same published fulfilment relationship. This is the public bridge used across the cases.",
+          "support": "observed",
+          "title": "Independent public directory links Cedar Spire and Dune",
+          "type": "evidence"
+        }
+      ],
+      "closingDate": "2026-11-29",
+      "createdAt": "2026-11-24T08:12:00Z",
+      "entityIds": [
+        "ENT-MARKET-LISTING-01",
+        "ENT-ORG-DUNE-01",
+        "ENT-ORG-CSP-01"
+      ],
+      "evidenceIds": [
+        "EV-MKT-001",
+        "EV-MKT-002",
+        "EV-MKT-003",
+        "EV-DIR-001"
+      ],
+      "id": "TKT-MARKET-003",
+      "relationshipIds": [
+        "REL-MKT-TERMS-DUNE",
+        "REL-DUNE-CSP-DIRECTORY"
+      ],
+      "reportMarkdown": "# Marketplace seller licence mismatch\n\n**Ticket:** `TKT-MARKET-003`  \n**Risk score:** **76/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-29\n\n## Assessment\n\nA marketplace listing shows a seller/licence-category mismatch. Public marketplace terms name Dune Fulfilment, and an independent directory links Dune's fulfilment role to Cedar Spire's Cedar Select programme. The relationship is evidence of a public business connection, not proof of a completed sale or fraud.\n\n## Why it is prioritized\n\nSeller listing and public activity directory mismatch (EV-MKT-001, EV-MKT-002); public marketplace fulfilment terms (EV-MKT-003); independent business directory corroboration (EV-DIR-001).\n\n## What remains unknown\n\nNo private seller data, order history, payments, customer identities, or fulfilment event is included. Licensing mismatch can have benign explanations and needs verification.\n\n## Public evidence\n\n- [EV-MKT-001](/api/v1/assets/EV-MKT-001) — Marketplace seller listing capture\n- [EV-MKT-002](/api/v1/assets/EV-MKT-002) — Public trade-licence directory record\n- [EV-MKT-003](/api/v1/assets/EV-MKT-003) — Marketplace public seller and fulfilment terms\n- [EV-DIR-001](/api/v1/assets/EV-DIR-001) — Independent public directory links Cedar Spire and Dune\n",
+      "revision": 1,
+      "status": "open",
+      "title": "Marketplace seller licence mismatch",
+      "updatedAt": "2026-11-24T08:15:00Z"
+    },
+    {
+      "blocks": [
+        {
+          "id": "BLK-TKT-MAPS-004-REPORT",
+          "text": "# Maps-listed recovery service\n\n**Ticket:** `TKT-MAPS-004`  \n**Risk score:** **72/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-30\n\n## Assessment\n\nA public Maps-style listing points to archived site terms naming Dune Fulfilment as service fulfilment company. The independent directory links Dune to Cedar Spire's public business programme, creating a public-record path into the same network.\n\n## Why it is prioritized\n\nPublic listing and archived terms (EV-MAPS-001, EV-MAPS-002); cross-reference to the independent public directory (EV-DIR-001).\n\n## What remains unknown\n\nNo private provider records, customer complaints, payment records, or verified listing owner are included. The named fulfilment role does not prove control of the listing or fraudulent conduct.\n\n## Public evidence\n\n- [EV-MAPS-001](/api/v1/assets/EV-MAPS-001) — Public Maps-style recovery listing\n- [EV-MAPS-002](/api/v1/assets/EV-MAPS-002) — Archived recovery-site terms\n- [EV-DIR-001](/api/v1/assets/EV-DIR-001) — Independent public directory links Cedar Spire and Dune\n",
+          "type": "markdown"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "6e658e786f77d5db8d3b3f52bf5a2c72b4b16460bdded07ea08bbec7ea6cdc2c",
+            "url": "/api/v1/assets/EV-MAPS-001"
+          },
+          "capturedAt": "2026-11-24T08:18:00Z",
+          "collectionMethod": "static_public_listing_capture",
+          "evidenceId": "EV-MAPS-001",
+          "id": "BLK-EV-MAPS-001",
+          "language": "en",
+          "sourceReference": "https://maps.example.test/listings/recovery-41",
+          "summary": "A fictional Maps-style listing promotes document and payment recovery services and links by text reference to a static service site. No real address, phone number, coordinates, or action is included.",
+          "support": "observed",
+          "title": "Public Maps-style recovery listing",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "fec3c7934fd86ae8e6ce9cbfffdd37ce1f361ab78978ee0e3e31021b34fa5ec1",
+            "url": "/api/v1/assets/EV-MAPS-002"
+          },
+          "capturedAt": "2026-11-24T08:19:00Z",
+          "collectionMethod": "static_archive_text_capture",
+          "evidenceId": "EV-MAPS-002",
+          "id": "BLK-EV-MAPS-002",
+          "language": "en",
+          "sourceReference": "https://archive.example.test/captures/recovery-terms-01",
+          "summary": "The archived terms page names Dune Fulfilment LLC as the service fulfilment company and mentions an advance review fee. It is static text only.",
+          "support": "observed",
+          "title": "Archived recovery-site terms",
+          "type": "evidence"
+        },
+        {
+          "asset": {
+            "mimeType": "text/markdown",
+            "sha256": "ee378cd235d6bd97aeddecf37e7dbcfd6863e86480528a87bb6d8518109fa6bb",
+            "url": "/api/v1/assets/EV-DIR-001"
+          },
+          "capturedAt": "2026-11-24T08:15:00Z",
+          "collectionMethod": "static_public_directory_capture",
+          "evidenceId": "EV-DIR-001",
+          "id": "BLK-EV-DIR-001",
+          "language": "en",
+          "sourceReference": "https://directory.example.test/partners/dune-cedar",
+          "summary": "An independent public business directory lists Cedar Spire's Cedar Select programme and Dune Fulfilment LLC under the same published fulfilment relationship. This is the public bridge used across the cases.",
+          "support": "observed",
+          "title": "Independent public directory links Cedar Spire and Dune",
+          "type": "evidence"
+        }
+      ],
+      "closingDate": "2026-11-30",
+      "createdAt": "2026-11-24T08:15:00Z",
+      "entityIds": [
+        "ENT-URL-RECOVERY-01",
+        "ENT-ORG-DUNE-01",
+        "ENT-ORG-CSP-01"
+      ],
+      "evidenceIds": [
+        "EV-MAPS-001",
+        "EV-MAPS-002",
+        "EV-DIR-001"
+      ],
+      "id": "TKT-MAPS-004",
+      "relationshipIds": [
+        "REL-MAPS-TERMS-DUNE",
+        "REL-DUNE-CSP-DIRECTORY"
+      ],
+      "reportMarkdown": "# Maps-listed recovery service\n\n**Ticket:** `TKT-MAPS-004`  \n**Risk score:** **72/100** — triage score, not a probability or finding of guilt.  \n**Proposed closing date:** 2026-11-30\n\n## Assessment\n\nA public Maps-style listing points to archived site terms naming Dune Fulfilment as service fulfilment company. The independent directory links Dune to Cedar Spire's public business programme, creating a public-record path into the same network.\n\n## Why it is prioritized\n\nPublic listing and archived terms (EV-MAPS-001, EV-MAPS-002); cross-reference to the independent public directory (EV-DIR-001).\n\n## What remains unknown\n\nNo private provider records, customer complaints, payment records, or verified listing owner are included. The named fulfilment role does not prove control of the listing or fraudulent conduct.\n\n## Public evidence\n\n- [EV-MAPS-001](/api/v1/assets/EV-MAPS-001) — Public Maps-style recovery listing\n- [EV-MAPS-002](/api/v1/assets/EV-MAPS-002) — Archived recovery-site terms\n- [EV-DIR-001](/api/v1/assets/EV-DIR-001) — Independent public directory links Cedar Spire and Dune\n",
+      "revision": 1,
+      "status": "open",
+      "title": "Maps-listed recovery service",
+      "updatedAt": "2026-11-24T08:19:00Z"
+    }
+  ],
+  "workspaceId": "workspace-demo-public-osint-01"
+}

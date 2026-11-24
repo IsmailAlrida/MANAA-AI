@@ -1,0 +1,3 @@
+[submodule "manaa"]
+	path = engine
+	url = https://github.com/IsmailAlrida/manaa.git
