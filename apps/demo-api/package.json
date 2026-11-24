@@ -1,0 +1,28 @@
+{
+  "name": "demo-api",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "description": "Demo backend: replays the fictional fixture scenario through the v1 REST + SSE contract. Non-persistent. Also the shared core used by apps/api.",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.ts",
+    "start": "node src/server.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@workspace/typescript-config": "^0.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.11",
+    "hono": "^4.13.21"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
