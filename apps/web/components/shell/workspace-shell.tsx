@@ -6,7 +6,6 @@ import { Direction } from "radix-ui"
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@workspace/ui/components/resizable"
-import { Separator } from "@workspace/ui/components/separator"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 import { useLocale } from "@/lib/i18n"
@@ -28,7 +27,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
     <Direction.Provider dir={dir}>
       <TooltipProvider>
         <div className="flex h-svh flex-col">
-            <header className="flex flex-wrap items-center gap-2 p-2">
+            <header className="header-scope flex flex-wrap items-center gap-2 px-3 py-2 shadow-sm">
               <TopNav />
               <div className="flex-1" />
               <ConnectionStatus />
@@ -47,7 +46,6 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Hint>
             </header>
-            <Separator />
 
             {/* Hard errors only; "offline" is shown non-blockingly in the header. */}
             {ws.load.tag === "error" && (

@@ -45,7 +45,7 @@ export function TopNav() {
     <nav aria-label={t.product} className="flex flex-wrap items-center gap-1">
       <Hint label={ws.workspaceId ?? t.workspace}>
         <span tabIndex={0} className="flex items-center gap-2 px-2 font-semibold">
-          <IconShieldCheck className="size-5 shrink-0 text-primary" />
+          <IconShieldCheck className="size-5 shrink-0" style={{ color: "var(--header-accent)" }} />
           {t.product}
         </span>
       </Hint>
@@ -53,7 +53,12 @@ export function TopNav() {
       {pages.map((p) => {
         const active = pathname.startsWith(p.href)
         return (
-          <Button key={p.href} variant={active ? "secondary" : "ghost"} asChild>
+          <Button
+            key={p.href}
+            variant={active ? "secondary" : "ghost"}
+            className={active ? "shadow-[inset_0_-2px_0_var(--header-accent)]" : undefined}
+            asChild
+          >
             <Link href={p.href} aria-current={active ? "page" : undefined}>
               <p.icon />
               {p.label}
@@ -65,7 +70,7 @@ export function TopNav() {
 
       {pathname.startsWith("/network") && (
         <>
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <Separator orientation="vertical" className="mx-1 h-5 bg-white/25" />
           <ToggleGroup
             type="single"
             variant="outline"

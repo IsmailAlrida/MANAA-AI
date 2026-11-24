@@ -74,6 +74,7 @@ export function TicketQueue() {
         </ToggleGroup>
       </div>
 
+      <div className="overflow-hidden rounded-xl border shadow-sm" style={{ background: "var(--card)" }}>
       <Table>
         <TableHeader>
           <TableRow>
@@ -120,6 +121,7 @@ export function TicketQueue() {
           )}
         </TableBody>
       </Table>
+      </div>
     </section>
   )
 }

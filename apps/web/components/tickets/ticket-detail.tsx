@@ -101,7 +101,7 @@ export function TicketDetail({ ticketId }: { ticketId: string }) {
 
           <Separator />
 
-          <Tabs defaultValue="report">
+          <Tabs defaultValue="report" className="rounded-xl border p-4 shadow-sm" style={{ background: "var(--card)" }}>
             <TabsList>
               <TabsTrigger value="report">
                 <IconFileText />

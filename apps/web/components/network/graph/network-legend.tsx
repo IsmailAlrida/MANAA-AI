@@ -6,34 +6,26 @@ import { Button } from "@workspace/ui/components/button"
 import { useLocale } from "@/lib/i18n"
 import { useWorkspace, useWorkspaceActions } from "@/lib/workspace/store"
 import { Hint } from "../../hint"
-import { INFERRED_DASH, NEUTRAL_EDGE, STRENGTH_STYLE } from "./edge-style"
+import { INFERRED_DASH, STRENGTH_STYLE } from "./edge-style"
 import type { KindGroup } from "./kind-icon"
 
 const KIND_ORDER: KindGroup[] = ["org", "identity", "web", "content", "infra", "money"]
 
-function Line({ color, width, dash, label }: { color: string; width: number; dash?: string; label: string }) {
+function Sample({ children, label }: { children: React.ReactNode; label: string }) {
   return (
-    <li className="flex items-center gap-2">
-      <svg width="36" height="10" aria-hidden className="shrink-0">
-        <line x1="2" y1="5" x2="34" y2="5" stroke={color} strokeWidth={width} strokeDasharray={dash} strokeLinecap="round" />
-      </svg>
-      <span>{label}</span>
+    <li className="flex items-center gap-1.5">
+      <svg width="22" height="10" aria-hidden className="shrink-0">{children}</svg>
+      <span className="truncate">{label}</span>
     </li>
   )
 }
-
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <h4 className="text-xs font-medium text-muted-foreground">{title}</h4>
-      <ul className="flex flex-col gap-1.5 text-xs">{children}</ul>
-    </div>
-  )
-}
+const Stroke = ({ color, width, dash }: { color: string; width: number; dash?: string }) => (
+  <line x1="1" y1="5" x2="21" y2="5" strokeWidth={width} strokeDasharray={dash} strokeLinecap="round" style={{ stroke: color }} />
+)
 
 /**
- * Hideable key for the graph. Reads the same style table as the edges and the
- * same kind tokens as the nodes, so it cannot drift from what is drawn.
+ * Compact, hideable key. Reads the same style table as the links and the same
+ * kind tokens as the dots, so it cannot drift from what is drawn.
  */
 export function NetworkLegend() {
   const { t } = useLocale()
@@ -43,16 +35,8 @@ export function NetworkLegend() {
   if (!legendOpen)
     return (
       <Hint label={t.network.showLegend}>
-        <Button
-          variant="outline"
-          size="sm"
-          aria-expanded={false}
-          aria-label={t.network.showLegend}
-          style={{ background: "var(--card)" }}
-          onClick={() => setLegendOpen(true)}
-        >
+        <Button variant="outline" size="icon-sm" aria-expanded={false} aria-label={t.network.showLegend} style={{ background: "var(--card)" }} onClick={() => setLegendOpen(true)}>
           <IconInfoCircle />
-          {t.network.legend}
         </Button>
       </Hint>
     )
@@ -60,49 +44,43 @@ export function NetworkLegend() {
   return (
     <section
       aria-label={t.network.legend}
-      className="flex w-64 flex-col gap-3 rounded-lg border p-3 shadow-sm"
+      className="flex w-44 flex-col gap-2 rounded-lg border px-2.5 py-2 text-[11px] shadow-sm"
       style={{ background: "var(--card)", color: "var(--card-foreground)" }}
     >
-      <header className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold">{t.network.legend}</h3>
+      <header className="flex items-center justify-between gap-1">
+        <Hint label={t.network.strengthLegend}>
+          <h3 tabIndex={0} className="text-xs font-semibold">{t.network.legend}</h3>
+        </Hint>
         <Hint label={t.network.hideLegend}>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-expanded
-            aria-label={t.network.hideLegend}
-            onClick={() => setLegendOpen(false)}
-          >
+          <Button variant="ghost" size="icon-xs" aria-expanded aria-label={t.network.hideLegend} onClick={() => setLegendOpen(false)}>
             <IconChevronUp />
           </Button>
         </Hint>
       </header>
 
-      <Group title={t.network.strength}>
+      <ul aria-label={t.network.strength} className="flex flex-col gap-1">
+        <li className="text-[10px] uppercase tracking-wide text-muted-foreground">{t.network.strength}</li>
         {(["strong", "medium", "weak"] as const).map((k) => (
-          <Line key={k} color={STRENGTH_STYLE[k].color} width={STRENGTH_STYLE[k].width} label={t.network[k]} />
+          <Sample key={k} label={t.network[k]}>
+            <Stroke color={STRENGTH_STYLE[k].color} width={STRENGTH_STYLE[k].width} />
+          </Sample>
         ))}
-      </Group>
+        <Sample label={t.network.lineInferred}>
+          <Stroke color="var(--muted-foreground)" width={1.5} dash={INFERRED_DASH} />
+        </Sample>
+        <Sample label={t.network.cluster}>
+          <rect x="1" y="1" width="20" height="8" rx="4" strokeWidth="1.2" style={{ fill: "color-mix(in oklch, var(--community-1) 14%, transparent)", stroke: "var(--community-1)" }} />
+        </Sample>
+      </ul>
 
-      <Group title={t.network.evidence}>
-        <Line color={NEUTRAL_EDGE.color} width={2} label={t.network.lineObserved} />
-        <Line color={NEUTRAL_EDGE.color} width={2} dash={INFERRED_DASH} label={t.network.lineInferred} />
-      </Group>
-
-      <Group title={t.network.entityTypes}>
+      <ul aria-label={t.network.entityTypes} className="grid grid-cols-2 gap-x-2 gap-y-1 border-t pt-2">
         {KIND_ORDER.map((k) => (
-          <li key={k} className="flex items-center gap-2">
-            <span
-              aria-hidden
-              className="inline-block h-2.5 w-9 shrink-0 rounded-sm"
-              style={{ background: `var(--kind-${k})` }}
-            />
-            <span>{t.network.kinds[k]}</span>
+          <li key={k} className="flex items-center gap-1.5">
+            <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: `var(--kind-${k})` }} />
+            <span className="truncate">{t.network.kinds[k]}</span>
           </li>
         ))}
-      </Group>
-
-      <p className="text-xs text-muted-foreground">{t.network.strengthLegend}</p>
+      </ul>
     </section>
   )
 }
