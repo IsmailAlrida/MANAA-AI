@@ -2,6 +2,7 @@ import { Geist, Geist_Mono, Figtree, Raleway } from "next/font/google"
 
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { LocaleProvider } from "@/lib/i18n"
 import { cn } from "@workspace/ui/lib/utils";
 
 const ralewayHeading = Raleway({subsets:['latin'],variable:'--font-heading'});
@@ -21,11 +22,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      dir="ltr"
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", figtree.variable, ralewayHeading.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <LocaleProvider>{children}</LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
