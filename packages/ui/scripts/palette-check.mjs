@@ -52,7 +52,7 @@ const hex = (o) => "#" + rgb(o).map((v) => Math.round(gamma(v) * 255).toString(1
 const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05) }
 
 const SIGNALS = ["red", "orange", "amber", "green", "blue", "teal", "slate"]
-const STROKES = ["strength-strong", "strength-medium", "strength-weak", "kind-org", "kind-identity", "kind-web", "kind-content", "kind-infra", "kind-money"]
+const STROKES = ["strength-strong", "strength-medium", "strength-weak", "kind-org", "kind-identity", "kind-web", "kind-content", "kind-infra", "kind-money", "community-1", "community-2", "community-3", "community-4", "community-5", "community-6"]
 const ALIASES = ["support-observed", "support-possible", "support-disputed", "status-open", "status-overdue", "status-closed", "priority-high", "priority-medium", "priority-low"]
 
 const rows = []
@@ -75,13 +75,20 @@ for (const mode of ["light", "dark"]) {
   }
   for (const a of ALIASES) add(`${a} / its soft tint`, a, `${a}-soft`, 4.5)
   for (const s of STROKES) add(`${s} / background (non-text)`, s, "background", 3)
+  add("header-foreground / header", "header-foreground", "header", 7)
+  add("header-muted / header", "header-muted", "header", 4.5)
+  add("header-accent / header (non-text)", "header-accent", "header", 3)
+  add("header-cta-foreground / header-cta", "header-cta-foreground", "header-cta", 4.5)
+  add("header-cta / header (non-text)", "header-cta", "header", 3)
+  add("foreground / canvas", "foreground", "canvas", 7)
+  add("card / canvas (card edge visible, non-text)", "card", "canvas", 1.0)
 }
 const fails = rows.filter((r) => r.ratio < r.min)
 
 if (process.argv.includes("--markdown")) {
   const sw = (mode, n) => `\`${hex(resolve(mode, n))}\``
   const out = ["| Token | Light | Dark |", "| --- | --- | --- |"]
-  for (const n of ["background", "foreground", "card", "primary", "primary-foreground", "secondary", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "border", "ring"])
+  for (const n of ["background", "foreground", "card", "primary", "primary-foreground", "secondary", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "border", "ring", "canvas", "header", "header-accent", "header-cta"])
     out.push(`| \`${n}\` | ${sw("light", n)} | ${sw("dark", n)} |`)
   out.push("", "| Signal | Strong (light) | Soft (light) | Strong (dark) | Soft (dark) |", "| --- | --- | --- | --- | --- |")
   for (const s of SIGNALS) out.push(`| \`${s}\` | ${sw("light", `signal-${s}`)} | ${sw("light", `signal-${s}-soft`)} | ${sw("dark", `signal-${s}`)} | ${sw("dark", `signal-${s}-soft`)} |`)
