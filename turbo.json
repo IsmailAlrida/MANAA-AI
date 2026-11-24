@@ -5,7 +5,8 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"],
+      "env": ["MANAA_API_ORIGIN"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -18,7 +19,11 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["MANAA_API_ORIGIN", "DEMO_*"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
     }
   }
 }
