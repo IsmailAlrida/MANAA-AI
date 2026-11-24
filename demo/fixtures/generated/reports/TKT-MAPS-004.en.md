@@ -1,7 +1,7 @@
 # Maps-listed recovery service
 
-**Ticket:** `TKT-MAPS-004`  
-**Risk score:** **72/100** — triage score, not a probability or finding of guilt.  
+**Ticket:** `TKT-MAPS-004`
+**Case priority:** **72/100** — a triage score based on the cited evidence, not a probability or finding of guilt.
 **Proposed closing date:** 2026-11-30
 
 ## Assessment
@@ -16,7 +16,7 @@ Public listing and archived terms (EV-MAPS-001, EV-MAPS-002); cross-reference to
 
 No private provider records, customer complaints, payment records, or verified listing owner are included. The named fulfilment role does not prove control of the listing or fraudulent conduct.
 
-## Public evidence
+## Evidence citations
 
 - [EV-MAPS-001](/api/v1/assets/EV-MAPS-001) — Public Maps-style recovery listing
 - [EV-MAPS-002](/api/v1/assets/EV-MAPS-002) — Archived recovery-site terms

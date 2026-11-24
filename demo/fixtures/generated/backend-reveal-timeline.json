@@ -55,6 +55,15 @@
       "type": "evidence_available"
     },
     {
+      "at": "2026-11-24T08:10:00Z",
+      "evidenceId": "EV-INT-001",
+      "ticketIds": [
+        "TKT-LI-002"
+      ],
+      "title": "Assumed police internal index match (fictional mock)",
+      "type": "evidence_available"
+    },
+    {
       "at": "2026-11-24T08:12:00Z",
       "evidenceId": "EV-MKT-001",
       "ticketIds": [

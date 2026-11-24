@@ -1,3 +1,3 @@
 # Collection scope
 
-This demo uses retrospective fictional public captures only: organic search, archived pages, public portfolio material, advertiser disclosures, marketplace listings and terms, Maps-style listing text, and independent public directories. The scan has no ad buying, private account access, provider imports, customer transaction data, or network collection.
+This demo fixture includes retrospective fictional public captures and one assumed-authorized police internal API mock record. Its person and records are entirely synthetic, contain no real identifiers or account data, trigger no external request, and are linked cautiously as possible work affiliation only. The mock does not establish authorship or wrongdoing.

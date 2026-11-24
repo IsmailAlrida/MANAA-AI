@@ -1,7 +1,7 @@
 # Organic TAMM typo-squat result
 
-**Ticket:** `TKT-TAMM-001`  
-**Risk score:** **90/100** — triage score, not a probability or finding of guilt.  
+**Ticket:** `TKT-TAMM-001`
+**Case priority:** **90/100** — a triage score based on the cited evidence, not a probability or finding of guilt.
 **Proposed closing date:** 2026-11-27
 
 ## Assessment
@@ -16,7 +16,7 @@ Organic typo-squat result and bilingual service prompt (EV-TAMM-001, EV-TAMM-002
 
 No paid ad, private provider return, payment record, victim record, or individual operator evidence is present. The public portfolio link does not establish knowledge or wrongdoing.
 
-## Public evidence
+## Evidence citations
 
 - [EV-TAMM-001](/api/v1/assets/EV-TAMM-001) — Organic typo-squat search result
 - [EV-TAMM-002](/api/v1/assets/EV-TAMM-002) — Archived bilingual fee-page capture

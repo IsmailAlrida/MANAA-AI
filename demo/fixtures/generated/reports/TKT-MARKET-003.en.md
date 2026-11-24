@@ -1,7 +1,7 @@
 # Marketplace seller licence mismatch
 
-**Ticket:** `TKT-MARKET-003`  
-**Risk score:** **76/100** — triage score, not a probability or finding of guilt.  
+**Ticket:** `TKT-MARKET-003`
+**Case priority:** **76/100** — a triage score based on the cited evidence, not a probability or finding of guilt.
 **Proposed closing date:** 2026-11-29
 
 ## Assessment
@@ -16,7 +16,7 @@ Seller listing and public activity directory mismatch (EV-MKT-001, EV-MKT-002); 
 
 No private seller data, order history, payments, customer identities, or fulfilment event is included. Licensing mismatch can have benign explanations and needs verification.
 
-## Public evidence
+## Evidence citations
 
 - [EV-MKT-001](/api/v1/assets/EV-MKT-001) — Marketplace seller listing capture
 - [EV-MKT-002](/api/v1/assets/EV-MKT-002) — Public trade-licence directory record
