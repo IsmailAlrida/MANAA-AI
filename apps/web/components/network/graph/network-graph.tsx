@@ -154,6 +154,9 @@ export function NetworkGraph({
   const fitted = React.useRef(false)
   const pointer = React.useRef({ x: 0, y: 0 })
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined)
+  // Left button moves nodes; the right or middle button pans (the library's own left-drag pan is off).
+  const panning = React.useRef<{ x: number; y: number; cx: number; cy: number; k: number } | null>(null)
+  const [panActive, setPanActive] = React.useState(false)
   const [size, setSize] = React.useState({ w: 0, h: 0 })
   const [hoverId, setHoverId] = React.useState<string | null>(null)
   const [card, setCard] = React.useState<{ id: string; x: number; y: number } | null>(null)
@@ -421,10 +424,33 @@ export function NetworkGraph({
       ref={wrapRef}
       dir="ltr"
       className="relative h-full min-h-0 overflow-hidden"
-      style={{ background: "var(--canvas)" }}
       role="img"
       aria-label={`${t.network.graphCanvas}: ${graph.nodes.length} / ${graph.links.length}`}
+      style={{ background: "var(--canvas)", cursor: panActive ? "grabbing" : undefined }}
+      onContextMenu={(e) => e.preventDefault()}
+      onMouseDown={(e) => e.button === 1 && e.preventDefault()}
+      onPointerDown={(e) => {
+        const fg = fgRef.current
+        if ((e.button !== 1 && e.button !== 2) || !fg || !(e.target instanceof HTMLCanvasElement)) return
+        const c = fg.centerAt()
+        panning.current = { x: e.clientX, y: e.clientY, cx: c.x, cy: c.y, k: fg.zoom() }
+        e.currentTarget.setPointerCapture(e.pointerId)
+        setPanActive(true)
+        hoverNode(null)
+      }}
+      onPointerUp={(e) => {
+        if (!panning.current) return
+        panning.current = null
+        setPanActive(false)
+        e.currentTarget.releasePointerCapture(e.pointerId)
+      }}
+      onPointerCancel={() => {
+        panning.current = null
+        setPanActive(false)
+      }}
       onPointerMove={(e) => {
+        const pan = panning.current
+        if (pan && fgRef.current) fgRef.current.centerAt(pan.cx - (e.clientX - pan.x) / pan.k, pan.cy - (e.clientY - pan.y) / pan.k)
         const r = e.currentTarget.getBoundingClientRect()
         pointer.current = {
           x: Math.min(Math.max(8, e.clientX - r.left + 16), Math.max(8, r.width - CARD.w - 8)),
@@ -461,10 +487,15 @@ export function NetworkGraph({
           onNodeHover={(n) => hoverNode((n as N) ?? null)}
           onNodeClick={(n) => onSelect(String(n.id))}
           onZoom={() => hoverNode(null)}
-          enableNodeDrag={false}
+          enableNodeDrag
+          enablePanInteraction={false}
+          onNodeDrag={() => {
+            clearTimeout(timer.current)
+            setCard(null)
+          }}
           autoPauseRedraw={false}
           warmupTicks={200}
-          cooldownTicks={reduced ? 0 : 400}
+          cooldownTicks={reduced ? 60 : 400}
           d3AlphaDecay={0.035}
         />
       )}
