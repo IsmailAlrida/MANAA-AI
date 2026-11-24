@@ -67,7 +67,7 @@ The top bar is a deep-navy band (`--header`) with a bright cyan accent (`--heade
 
 ## Graph
 
-Link strength is drawn by colour **and** weight (3 / 2 / 1.25 px); a dashed line means the link is not directly observed. Entities are dots coloured by one of six families (a soft halo around each); dot size grows with the number of links. Communities are found from the relationships (Louvain, weighted by link strength) unless the backend names one in `attributes.community`, and each community of two or more gets a tinted bubble in one of six `--community-*` hues, labelled with its best-connected entity; unknown kinds fall back to the neutral `infra` tone. The legend component reads the same tables as the edges and nodes (`edge-style.ts`, `kindGroup`), so it cannot drift.
+Link strength is drawn by colour **and** weight (3 / 2 / 1.25 px); a dashed line means the link is not directly observed. Entities are drawn as a shape + glyph in one of six colour families (circle = person, rounded square = company or bank, hexagon = server, diamond = transaction), with a soft halo; size grows with the number of links. Communities are found from the relationships (Louvain, weighted by link strength) unless the backend names one in `attributes.community`, and each community of two or more gets a tinted bubble in one of six `--community-*` hues, labelled with its best-connected entity; unknown kinds fall back to the neutral `infra` tone. The legend component reads the same tables as the edges and nodes (`edge-style.ts`, `kindGroup`), so it cannot drift.
 
 | Entity kinds | Family |
 | --- | --- |

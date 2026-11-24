@@ -94,6 +94,21 @@ To run the dashboard against another compatible API, set `MANAA_API_ORIGIN` and 
 
 Submit the [MANAA-AI GitHub repository](https://github.com/IsmailAlrida/MANAA-AI), including the MVP and this README, through Podium+. Include the PowerPoint presentation, the one-minute demo video, and any other requested materials. The submission brief specifies the `master` branch and a deadline of **8:00 a.m. UAE time on 25 November 2026**.
 
+## Roadmap
+
+- [x] Replay four fictional campaigns through REST and SSE in the bilingual ticket and graph dashboard.
+- [ ] Discover a separately hosted static lookalike from the repo-owned reference catalogue alone. Save DNS, page and linked-destination evidence for review.
+- [ ] Surface one real suspected impersonator for UAE police review while excluding verified official sites.
+- [ ] Package the shared discovery tools and scripts with three or four cloneable ICM role templates for future specialists.
+- [ ] Provision a fresh VM with a reproducible agent environment on any supported host.
+- [ ] Run the discovery workflow through a backend adapter backed by one local OpenCode runtime.
+- [ ] Start one container per orchestra with `npm start`. Persist findings before notifying the downstream node and resume delivery after a restart.
+- [ ] Publish bilingual tickets and graph updates from the isolated police node using read-only simulated APIs, curated records and seeded transaction logs.
+- [ ] Measure precision, recall and time to flag on held-out fraudulent and legitimate URLs.
+- [ ] Deploy multiple nodes per layer using one repeatable recipe. Hosting platform and scheduler remain open.
+- [ ] Activate specialist workflows for social ads, search results and Maps listings.
+- [ ] Pilot the system at an authorized UAE police headquarters with investigators verifying findings before action.
+
 ## العربية
 
 **مناعة منصة استخبارات سيبرانية تعتمد على وكلاء الذكاء الاصطناعي، وتهدف إلى مساعدة محققي الشرطة في دولة الإمارات على كشف عمليات الاحتيال خلال أيام بدلاً من أسابيع.** يتطلب التحقيق العثور على الروابط المشبوهة وحفظ الأدلة ومقارنتها بسجلات متفرقة. وخلال ذلك قد يصل المحتالون إلى ضحايا جدد أو يعيدون تشغيل الموقع تحت نطاق مختلف.
@@ -109,6 +124,21 @@ Submit the [MANAA-AI GitHub repository](https://github.com/IsmailAlrida/MANAA-AI
 **النموذج الأولي** يعرض أربع قضايا خيالية عبر واجهات REST وتحديثات SSE، ويستخدم Next.js وshadcn/ui وReact Flow في الواجهة، وHono وSQLite في الخادم التجريبي، وبيانات مولّدة باستخدام Python. يحاكي العرض سجلاً واحداً من واجهة مقيدة مفترضة. يظل الفحص الحي والتكامل مع الأنظمة المقيدة جزءاً من التصميم المقترح.
 
 **التشغيل والبناء.** من جذر المستودع، استخدم Node.js 22.18 أو أحدث، ثم نفّذ `npm ci` و`npm run dev`. افتح [لوحة التحقيق](http://localhost:3000) واضغط **تشغيل الفحص**. استخدم `npm run build` لبناء المشروع.
+
+### خارطة الطريق
+
+- [x] عرض أربع حملات خيالية عبر REST وSSE في لوحة التذاكر والعلاقات بالعربية والإنجليزية.
+- [ ] اكتشاف موقع تجريبي ثابت شبيه بالموقع المرجعي ومستضاف بشكل مستقل، انطلاقاً من دليل المستودع وحده، وحفظ سجلات DNS ومحتوى الصفحة ووجهات روابطها للمراجعة.
+- [ ] رصد موقع حقيقي يُشتبه في انتحاله صفة جهة محمية وعرضه على محققي الشرطة في الإمارات، مع استبعاد المواقع الرسمية الموثّقة.
+- [ ] تجميع أدوات الاكتشاف المشتركة وبرامج التشغيل مع ثلاثة أو أربعة قوالب أدوار ICM قابلة للنسخ للوكلاء المتخصصين مستقبلاً.
+- [ ] تجهيز آلة افتراضية جديدة ببيئة تشغيل قابلة لإعادة الإنشاء على أي مضيف مدعوم.
+- [ ] تشغيل مسار الاكتشاف عبر موائم في الخادم يستخدم بيئة OpenCode محلية واحدة.
+- [ ] تشغيل حاوية لكل أوركسترا بأمر `npm start`، وحفظ النتائج قبل إشعار العقدة التالية، واستئناف التسليم بعد إعادة التشغيل.
+- [ ] نشر تذاكر باللغتين وتحديث شبكة العلاقات من عقدة الشرطة المعزولة باستخدام واجهات محاكاة للقراءة فقط وسجلات منتقاة ومعاملات مولّدة ببذرة ثابتة.
+- [ ] قياس الدقة والاسترجاع وزمن رصد التهديد على مجموعة اختبار مستقلة من الروابط الاحتيالية والسليمة.
+- [ ] نشر عدة عقد في كل طبقة بطريقة قابلة للتكرار، مع إبقاء اختيار منصة الاستضافة وأداة الجدولة مفتوحاً.
+- [ ] تفعيل مسارات متخصصة لإعلانات التواصل الاجتماعي ونتائج البحث وقوائم الخرائط.
+- [ ] إجراء تجربة ميدانية مصرّح بها في مقرّ للشرطة في الإمارات، يتحقق فيها المحققون من النتائج قبل اتخاذ أي إجراء.
 
 **التسليم.** يُرفع رابط مستودع GitHub والنموذج الأولي وملف README والعرض التقديمي والفيديو التوضيحي لمدة دقيقة عبر Podium+. يحدد دليل التسليم فرع `master`، والموعد النهائي هو **الثامنة صباحاً بتوقيت الإمارات يوم 25 نوفمبر 2026**.
 
