@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "palette:check": "node scripts/palette-check.mjs"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.52.0",
