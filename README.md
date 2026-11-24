@@ -97,17 +97,20 @@ Submit the [MANAA-AI GitHub repository](https://github.com/IsmailAlrida/MANAA-AI
 ## Roadmap
 
 - [x] Replay four fictional campaigns through REST and SSE in the bilingual ticket and graph dashboard.
-- [ ] Discover a separately hosted static lookalike from the repo-owned reference catalogue alone. Save DNS, page and linked-destination evidence for review.
-- [ ] Surface one real suspected impersonator for UAE police review while excluding verified official sites.
+- [ ] Version the protected-site catalogue and its official-domain exclusions. Host the static test lookalike separately and withhold its URL from the engine.
 - [ ] Package the shared discovery tools and scripts with three or four cloneable ICM role templates for future specialists.
 - [ ] Provision a fresh VM with a reproducible agent environment on any supported host.
 - [ ] Run the discovery workflow through a backend adapter backed by one local OpenCode runtime.
+- [ ] Discover a separately hosted static lookalike from the repo-owned reference catalogue alone. Save DNS, page and linked-destination evidence for review.
+- [ ] Measure the single-node detector’s precision, recall and time to flag on held-out fraudulent and legitimate URLs.
+- [ ] Surface one real suspected impersonator for UAE police review while excluding verified official sites.
 - [ ] Start one container per orchestra with `npm start`. Persist findings before notifying the downstream node and resume delivery after a restart.
 - [ ] Publish bilingual tickets and graph updates from the isolated police node using read-only simulated APIs, curated records and seeded transaction logs.
-- [ ] Measure precision, recall and time to flag on held-out fraudulent and legitimate URLs.
 - [ ] Deploy multiple nodes per layer using one repeatable recipe. Hosting platform and scheduler remain open.
 - [ ] Activate specialist workflows for social ads, search results and Maps listings.
 - [ ] Pilot the system at an authorized UAE police headquarters with investigators verifying findings before action.
+
+Field validation can run alongside pipeline development once blind discovery works.
 
 ## العربية
 
@@ -128,17 +131,20 @@ Submit the [MANAA-AI GitHub repository](https://github.com/IsmailAlrida/MANAA-AI
 ### خارطة الطريق
 
 - [x] عرض أربع حملات خيالية عبر REST وSSE في لوحة التذاكر والعلاقات بالعربية والإنجليزية.
-- [ ] اكتشاف موقع تجريبي ثابت شبيه بالموقع المرجعي ومستضاف بشكل مستقل، انطلاقاً من دليل المستودع وحده، وحفظ سجلات DNS ومحتوى الصفحة ووجهات روابطها للمراجعة.
-- [ ] رصد موقع حقيقي يُشتبه في انتحاله صفة جهة محمية وعرضه على محققي الشرطة في الإمارات، مع استبعاد المواقع الرسمية الموثّقة.
+- [ ] حفظ دليل المواقع المحمية وقواعد استبعاد النطاقات الرسمية في المستودع، واستضافة الموقع التجريبي المشابه بشكل مستقل وإبقاء عنوانه خارج مدخلات المحرك.
 - [ ] تجميع أدوات الاكتشاف المشتركة وبرامج التشغيل مع ثلاثة أو أربعة قوالب أدوار ICM قابلة للنسخ للوكلاء المتخصصين مستقبلاً.
 - [ ] تجهيز آلة افتراضية جديدة ببيئة تشغيل قابلة لإعادة الإنشاء على أي مضيف مدعوم.
 - [ ] تشغيل مسار الاكتشاف عبر موائم في الخادم يستخدم بيئة OpenCode محلية واحدة.
+- [ ] اكتشاف موقع تجريبي ثابت شبيه بالموقع المرجعي ومستضاف بشكل مستقل، انطلاقاً من دليل المستودع وحده، وحفظ سجلات DNS ومحتوى الصفحة ووجهات روابطها للمراجعة.
+- [ ] قياس الدقة والاسترجاع وزمن الرصد على عقدة واحدة باستخدام مجموعة اختبار مستقلة من الروابط الاحتيالية والسليمة.
+- [ ] رصد موقع حقيقي يُشتبه في انتحاله صفة جهة محمية وعرضه على محققي الشرطة في الإمارات، مع استبعاد المواقع الرسمية الموثّقة.
 - [ ] تشغيل حاوية لكل أوركسترا بأمر `npm start`، وحفظ النتائج قبل إشعار العقدة التالية، واستئناف التسليم بعد إعادة التشغيل.
 - [ ] نشر تذاكر باللغتين وتحديث شبكة العلاقات من عقدة الشرطة المعزولة باستخدام واجهات محاكاة للقراءة فقط وسجلات منتقاة ومعاملات مولّدة ببذرة ثابتة.
-- [ ] قياس الدقة والاسترجاع وزمن رصد التهديد على مجموعة اختبار مستقلة من الروابط الاحتيالية والسليمة.
 - [ ] نشر عدة عقد في كل طبقة بطريقة قابلة للتكرار، مع إبقاء اختيار منصة الاستضافة وأداة الجدولة مفتوحاً.
 - [ ] تفعيل مسارات متخصصة لإعلانات التواصل الاجتماعي ونتائج البحث وقوائم الخرائط.
 - [ ] إجراء تجربة ميدانية مصرّح بها في مقرّ للشرطة في الإمارات، يتحقق فيها المحققون من النتائج قبل اتخاذ أي إجراء.
+
+بعد نجاح اختبار الاكتشاف من دون تزويد المحرك بعنوان الموقع، يمكن متابعة التحقق الميداني بالتوازي مع تطوير خط المعالجة.
 
 **التسليم.** يُرفع رابط مستودع GitHub والنموذج الأولي وملف README والعرض التقديمي والفيديو التوضيحي لمدة دقيقة عبر Podium+. يحدد دليل التسليم فرع `master`، والموعد النهائي هو **الثامنة صباحاً بتوقيت الإمارات يوم 25 نوفمبر 2026**.
 
