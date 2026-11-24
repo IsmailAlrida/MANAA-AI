@@ -20,7 +20,7 @@ Anti-goals: no toast, bell or unread count; no "fake/simulated" badges in the UI
 apps/web/
   app/page.tsx                          → redirect /network
   app/(workspace)/layout.tsx            WorkspaceProvider + WorkspaceShell
-  app/(workspace)/network/page.tsx      Graph (@xyflow/react + dagre) | Entities | Relationships + Inspector; the view is switched from the top bar
+  app/(workspace)/network/page.tsx      Graph (force-directed dots + community bubbles) | Entities | Relationships + Inspector; the view is switched from the top bar
   app/(workspace)/tickets/page.tsx      Queue (search + all/open/overdue/closed filter with counts)
   app/(workspace)/tickets/[ticketId]    Detail replaces queue: report / evidence / entities / history,
                                         closing-date editor, close dialog
@@ -31,7 +31,7 @@ apps/web/
   lib/workspace/store.tsx               Context+reducer, SSE subscribe→snapshot→merge by id/revision
   lib/workspace/{merge,derive}.ts       monotonic upsert; derived overdue; queue filtering
   lib/machines/*.ts                     button/flow state machines (below)
-  components/network/graph/*           lazy canvas, entity node, evidence edge (dashed = not observed)
+  components/network/graph/*           force-directed SVG graph: dots, links, community bubbles (d3-force, d3-zoom, graphology)
   components/tickets/report-markdown    react-markdown + remark-gfm, no raw HTML, EV-* links → citation chips
   components/hint.tsx                   hover/focus label wrapper (Tooltip) used for explanations
   lib/i18n.tsx                          EN/AR dictionary, <html lang dir>, Intl date formatting
@@ -54,8 +54,8 @@ All machines are pure reducers in `lib/machines/`. Invalid events leave the stat
 - **Navigation:** one top bar holds everything: brand (hover shows the workspace), the Network and Tickets pages with an open-ticket count, and, on Network only, an icon switch for Graph / Entities / Relationships. The view is transient state in the workspace store. There is no sidebar and no tab bar inside the viewport.
 
 - **No backend:** with no `MANAA_API_ORIGIN`, `app/api/v1/[...path]/route.ts` answers every request with a contract-shaped `503 backend_unavailable` instead of Next's HTML 404. When it's configured, the rewrite takes precedence over that dynamic route. The client treats network errors and 502/503/504 as **offline**: the shell, canvas and queue still render empty, and the header shows an "Offline" badge with a hover explanation and a Retry button. Run scan is disabled. Only other failures show the blocking error alert.
-- **Canvas:** the graph is always mounted, whether loading, empty or offline, as an infinite pannable canvas with a faint dotted grid (`--border` dots, 24px). Drag or two-finger scroll pans; pinch or ctrl+scroll zooms. Loading and empty states float over the grid. The camera frames the graph exactly once, when the first nodes are measured (`useNodesInitialized`). Fit padding is an explicit `"48px"`, because a bare number is ambiguous in xyflow v13.
-- **Graph:** dagre lays out only nodes that have no position yet. Existing and dragged nodes keep theirs, and `fitView` runs once on mount, so streamed upserts never move the camera. Edges are solid when `observed` and dashed otherwise. Hovering an edge label shows the relationship's `rationale`. The canvas is forced to `dir="ltr"`; node text uses `dir="auto"`. The React Flow attribution is kept (MIT; hiding it is meant for Pro subscribers).
+- **Canvas:** the graph is always mounted, whether loading, empty or offline, as an infinite pannable canvas with a faint dotted grid that moves with the camera. Loading and empty states float over it. The camera frames the graph once, when the first nodes arrive, leaving room for the legend.
+- **Graph:** an honest relationship graph, not boxes with ports. Entities are dots, relationships are straight links (weight and colour by strength, dashed when not observed), and the layout comes from a force simulation over the data. Communities are detected from the relationships and drawn as bubbles. Existing dots keep their place when new data streams in, and the camera frames the graph once and then only moves when the operator pans or zooms (scroll pans, pinch or ctrl+scroll zooms). Hover or focus a dot to highlight its neighbourhood; select one to label its links. The canvas stays left-to-right in Arabic; labels use `unicode-bidi: plaintext`. With reduced motion the layout is settled without animation. React Flow and dagre were removed.
 - **Report:** report-supplied images are not loaded. Links open with `noopener noreferrer nofollow`.
 - **Icons/hints:** Tabler icons go on actions and tabs where the meaning is obvious. Icon-only buttons carry an `aria-label`, and the tooltip is supplementary. Badges that need explaining (support level, overdue, priority) are focusable and show a hover label. Disabled buttons sit inside a focusable span so their hover label still works.
 
@@ -122,8 +122,7 @@ Versions and licences come from `npm view`. All of these accept React 19 peers.
 
 | Need | Package | Version | Why / note |
 | --- | --- | --- | --- |
-| Graph canvas | **`@xyflow/react`** | 13.0.3 (MIT) | Pan/zoom/fit, custom React nodes (shadcn inside nodes), keyboard selection, stable positions. Best fit for a "readable campaign subgraph", not a force hairball. |
-| Graph layout | **`@dagrejs/dagre`** | 3.1.3 (MIT) | Deterministic layered layout, so positions stay stable across upserts. `elkjs` is stronger but is **EPL-2.0/GPL-3.0**, so check before adopting. |
+| Graph | **`d3`** (force, zoom, polygon, shape) + **`graphology`** + `graphology-communities-louvain` | 7.9 / 0.26 / 2.0 (ISC / MIT) | Force-directed dots, pan/zoom, and community detection, all rendered as plain SVG. Replaced React Flow, whose node-and-port model doesn't suit a relationship graph. |
 | Safe report Markdown | **`react-markdown`** + **`remark-gfm`** | 10.1.0 / 4.0.1 (MIT) | No raw HTML by default. Map `[EV-…]` links to citation chips via `components`. Add `rehype-sanitize` (6.0.0) only if `rehype-raw` is ever enabled. |
 | Charts | shadcn **`chart`** (Recharts 3.11) | MIT | Already in the shadcn registry; same tokens. Covers the monetary activity view. |
 | Assistant | **`@assistant-ui/react`** | 0.15.38 (MIT) | Named in the PRD. Streaming, cancel and error states, plus a local runtime adapter for an offline scripted mode. |
