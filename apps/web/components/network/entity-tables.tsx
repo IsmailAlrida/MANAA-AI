@@ -1,6 +1,7 @@
 "use client"
 
 import { Badge } from "@workspace/ui/components/badge"
+import { KindLabel } from "./graph/kind-icon"
 import {
   Table,
   TableBody,
@@ -10,7 +11,11 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 
-import { entityLabel, type GraphEntity, type GraphRelationship } from "@/lib/api/types"
+import {
+  entityLabel,
+  type GraphEntity,
+  type GraphRelationship,
+} from "@/lib/api/types"
 import { useLocale } from "@/lib/i18n"
 import { SupportBadge } from "../evidence"
 
@@ -43,11 +48,14 @@ export function EntityTable({
             tabIndex={0}
             aria-selected={e.id === selectedId}
             onClick={() => onSelect(e.id)}
-            onKeyDown={(ev) => (ev.key === "Enter" || ev.key === " ") && (ev.preventDefault(), onSelect(e.id))}
+            onKeyDown={(ev) =>
+              (ev.key === "Enter" || ev.key === " ") &&
+              (ev.preventDefault(), onSelect(e.id))
+            }
           >
             <TableCell>{entityLabel(e, locale) ?? e.id}</TableCell>
             <TableCell>
-              <Badge variant="outline">{e.kind}</Badge>
+              <KindLabel kind={e.kind} />
             </TableCell>
             <TableCell>
               <SupportBadge support={e.support} />
@@ -81,7 +89,17 @@ export function RelationshipTable({
       </TableHeader>
       <TableBody>
         {relationships.map((r) => (
-          <TableRow key={r.id} title={[r.rationaleVariants?.[locale] ?? r.rationale, r.strength ? `${t.network.strength}: ${t.network[r.strength]}` : ""].filter(Boolean).join(" · ")}>
+          <TableRow
+            key={r.id}
+            title={[
+              r.rationaleVariants?.[locale] ?? r.rationale,
+              r.strength
+                ? `${t.network.strength}: ${t.network[r.strength]}`
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          >
             <TableCell>{labelFor(r.fromEntityId)}</TableCell>
             <TableCell>
               <Badge variant="outline">{r.kind}</Badge>

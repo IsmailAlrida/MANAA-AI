@@ -53,6 +53,8 @@ export const entitySchema = z.looseObject({
   labelVariants: z.record(z.string(), z.string()).optional(),
   nameVariants: z.array(nameVariantSchema).optional(),
   dossierVariants: z.record(z.enum(["en", "ar"]), dossierSchema).optional(),
+  // Optional header image for the entity (a face, a logo, a screenshot thumbnail). Same-origin asset path only.
+  image: z.looseObject({ url: z.string(), alt: z.string().optional() }).optional(),
   observedAt: z.string().optional(),
   support: supportSchema.optional(),
   uncertainty: z.string().nullable().optional(),
@@ -151,6 +153,11 @@ export function ticketText(ticket: Ticket, locale: "en" | "ar") {
       return { ...block, ...(copy as Partial<ReportBlock>) }
     }),
   }
+}
+
+/** Only same-origin API asset paths are ever loaded as images; anything else is ignored. */
+export function safeImageUrl(url: string | undefined) {
+  return url && /^\/api\/v1\/[\w./~%-]+$/.test(url) && !url.includes("..") ? url : undefined
 }
 
 export function entityLabel(entity: GraphEntity | undefined, locale: "en" | "ar") {

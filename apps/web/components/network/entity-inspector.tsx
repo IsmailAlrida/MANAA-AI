@@ -12,7 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@workspace/ui/components/empty"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
 import {
   Item,
   ItemContent,
@@ -22,10 +27,15 @@ import {
 } from "@workspace/ui/components/item"
 import { Separator } from "@workspace/ui/components/separator"
 
-import { entityLabel, type GraphEntity, type GraphRelationship } from "@/lib/api/types"
+import {
+  entityLabel,
+  type GraphEntity,
+  type GraphRelationship,
+} from "@/lib/api/types"
 import { useLocale } from "@/lib/i18n"
 import { EvidenceRefBadge, SupportBadge } from "../evidence"
 import { Hint } from "../hint"
+import { KindLabel } from "./graph/kind-icon"
 
 export function EntityInspector({
   entity,
@@ -52,26 +62,36 @@ export function EntityInspector({
       </Empty>
     )
 
-  const related = relationships.filter((r) => r.fromEntityId === entity.id || r.toEntityId === entity.id)
+  const related = relationships.filter(
+    (r) => r.fromEntityId === entity.id || r.toEntityId === entity.id
+  )
 
   return (
     <Card aria-label={t.network.inspector}>
       <CardHeader>
         <CardTitle>{entityLabel(entity, locale) ?? entity.id}</CardTitle>
         <CardDescription>
-          <Badge variant="outline">{entity.kind}</Badge> <SupportBadge support={entity.support} />{" "}
-          <code>{entity.id}</code>
+          <KindLabel kind={entity.kind} />{" "}
+          <SupportBadge support={entity.support} /> <code>{entity.id}</code>
         </CardDescription>
         <CardAction>
           <Hint label={t.hint.closePanel}>
-            <Button variant="ghost" size="icon" aria-label={t.hint.closePanel} onClick={onClose}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t.hint.closePanel}
+              onClick={onClose}
+            >
               <IconX />
             </Button>
           </Hint>
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <Button variant="outline" onClick={onOpenEvidence}><IconFileSearch />{t.network.openEvidence}</Button>
+        <Button variant="outline" onClick={onOpenEvidence}>
+          <IconFileSearch />
+          {t.network.openEvidence}
+        </Button>
         <dl>
           <dt>{t.network.observed}</dt>
           <dd>{fmtDate(entity.observedAt, true)}</dd>
@@ -89,14 +109,23 @@ export function EntityInspector({
         <h3>{t.network.relationships}</h3>
         <ItemGroup>
           {related.map((r) => {
-            const other = r.fromEntityId === entity.id ? r.toEntityId : r.fromEntityId
+            const other =
+              r.fromEntityId === entity.id ? r.toEntityId : r.fromEntityId
             return (
               <Item key={r.id} size="sm" variant="outline">
                 <ItemContent>
                   <ItemTitle>
-                    {r.kind} → {labelFor(other)} <SupportBadge support={r.support} /> {r.strength && <Badge variant="secondary">{t.network[r.strength]}</Badge>}
+                    {r.kind} → {labelFor(other)}{" "}
+                    <SupportBadge support={r.support} />{" "}
+                    {r.strength && (
+                      <Badge variant="secondary">{t.network[r.strength]}</Badge>
+                    )}
                   </ItemTitle>
-                  {(r.rationaleVariants?.[locale] ?? r.rationale) && <ItemDescription dir="auto">{r.rationaleVariants?.[locale] ?? r.rationale}</ItemDescription>}
+                  {(r.rationaleVariants?.[locale] ?? r.rationale) && (
+                    <ItemDescription dir="auto">
+                      {r.rationaleVariants?.[locale] ?? r.rationale}
+                    </ItemDescription>
+                  )}
                 </ItemContent>
               </Item>
             )

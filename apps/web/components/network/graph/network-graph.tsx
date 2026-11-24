@@ -1,75 +1,130 @@
 "use client"
 
 import * as React from "react"
+import ForceGraph2D, { type ForceGraphMethods, type LinkObject, type NodeObject } from "react-force-graph-2d"
 import { IconFocus2, IconMinus, IconPlus } from "@tabler/icons-react"
 import { Button } from "@workspace/ui/components/button"
-import {
-  curveCatmullRomClosed,
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  forceX,
-  forceY,
-  line,
-  select,
-  zoom,
-  zoomIdentity,
-  type Simulation,
-  type SimulationLinkDatum,
-  type SimulationNodeDatum,
-  type ZoomBehavior,
-  type ZoomTransform,
-} from "d3"
+import { forceCollide, forceX, forceY } from "d3-force"
+import { useTheme } from "next-themes"
 
 import { entityLabel, type GraphEntity, type GraphRelationship } from "@/lib/api/types"
 import { useLocale } from "@/lib/i18n"
 import { useWorkspace } from "@/lib/workspace/store"
 import { Hint } from "../../hint"
 import { INFERRED_DASH, NEUTRAL_EDGE, STRENGTH_STYLE } from "./edge-style"
-import { bubblePoints, buildDotGraph, dotRadius, type DotGraph } from "./graph-model"
-import { kindGroup } from "./kind-icon"
+import { bubblePoints, buildDotGraph, dotRadius } from "./graph-model"
+import { EntityHoverCard } from "./hover-card"
+import { kindStyle, type KindShape } from "./kind-icon"
+import { epicSprite, kindSprite } from "./kind-sprites"
 
-type SimNode = SimulationNodeDatum & { id: string; r: number; community: number }
-type SimLink = SimulationLinkDatum<SimNode> & { id: string }
+interface GNode {
+  id: string
+  entity: GraphEntity
+  degree: number
+  community: number
+  r: number
+}
+interface GLink {
+  id: string
+  relationship: GraphRelationship
+}
+type N = NodeObject<GNode>
+type L = LinkObject<GNode, GLink>
+type FG = ForceGraphMethods<N, L>
 
 const DISTANCE = { strong: 120, medium: 165, weak: 230 } as const
 const BUBBLE_PAD = 30
-const MARGIN = 64
+const FIT_PAD = 64
+const LABEL_ROOM = 90
 const LEGEND_ROOM = 204
-const COMMUNITY_COLORS = 6
-const hash = (s: string) => [...s].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 7)
+const HOVER_DELAY = 450
+const CARD = { w: 288, h: 224 }
 const clip = (s: string, n = 24) => (s.length > n ? s.slice(0, n - 1) + "…" : s)
-const bubbleLine = line<[number, number]>().curve(curveCatmullRomClosed.alpha(0.6))
+const isRtlText = (s: string) => /[֐-ࣿ]/.test(s)
 
-/** Pull each node toward its community's centroid so groups read as groups. */
-function communityForce(strength: number) {
-  let nodes: SimNode[] = []
-  const force = (alpha: number) => {
-    const sums = new Map<number, { x: number; y: number; n: number }>()
-    for (const n of nodes) {
-      const s = sums.get(n.community) ?? { x: 0, y: 0, n: 0 }
-      s.x += n.x ?? 0
-      s.y += n.y ?? 0
-      s.n++
-      sums.set(n.community, s)
-    }
-    for (const n of nodes) {
-      const s = sums.get(n.community)!
-      if (s.n < 2) continue
-      n.vx = (n.vx ?? 0) + (s.x / s.n - (n.x ?? 0)) * strength * alpha
-      n.vy = (n.vy ?? 0) + (s.y / s.n - (n.y ?? 0)) * strength * alpha
-    }
+/** Canvas can't read CSS variables directly: resolve the palette tokens once per theme. */
+function readPalette(el: HTMLElement) {
+  const cs = getComputedStyle(el)
+  const v = (name: string) => cs.getPropertyValue(`--${name}`).trim()
+  return {
+    card: v("card"),
+    fg: v("foreground"),
+    canvas: v("canvas"),
+    grid: v("grid-dot"),
+    primary: v("primary"),
+    muted: v("muted-foreground"),
+    kind: Object.fromEntries(["org", "identity", "web", "content", "infra", "money"].map((g) => [g, v(`kind-${g}`)])) as Record<string, string>,
+    community: [1, 2, 3, 4, 5, 6].map((i) => v(`community-${i}`)),
+    strength: { strong: v("strength-strong"), medium: v("strength-medium"), weak: v("strength-weak") },
   }
-  force.initialize = (n: SimNode[]) => void (nodes = n)
+}
+type Palette = ReturnType<typeof readPalette>
+
+/**
+ * Two jobs: pull each node toward its community's centroid so groups read as
+ * groups, and push whole communities apart when their bubbles would overlap.
+ */
+function communityForce(strength: number) {
+  let nodes: N[] = []
+  const force = (alpha: number) => {
+    const groups = new Map<number, { x: number; y: number; n: number; r: number; members: N[] }>()
+    for (const n of nodes) {
+      const g = groups.get(n.community) ?? { x: 0, y: 0, n: 0, r: 0, members: [] }
+      g.x += n.x ?? 0
+      g.y += n.y ?? 0
+      g.n++
+      g.members.push(n)
+      groups.set(n.community, g)
+    }
+    for (const g of groups.values()) {
+      g.x /= g.n
+      g.y /= g.n
+      g.r = Math.max(...g.members.map((m) => Math.hypot((m.x ?? 0) - g.x, (m.y ?? 0) - g.y) + m.r)) + BUBBLE_PAD
+    }
+    for (const g of groups.values()) {
+      if (g.n < 2) continue
+      for (const n of g.members) {
+        n.vx = (n.vx ?? 0) + (g.x - (n.x ?? 0)) * strength * alpha
+        n.vy = (n.vy ?? 0) + (g.y - (n.y ?? 0)) * strength * alpha
+      }
+    }
+    const gs = [...groups.values()].filter((g) => g.n >= 2)
+    for (let i = 0; i < gs.length; i++)
+      for (let j = i + 1; j < gs.length; j++) {
+        const a = gs[i]!, b = gs[j]!
+        const dx = b.x - a.x || 0.01, dy = b.y - a.y || 0.01
+        const d = Math.hypot(dx, dy), overlap = a.r + b.r + 20 - d
+        if (overlap <= 0) continue
+        const f = (overlap / d) * 0.5 * Math.min(1, alpha * 4)
+        for (const n of a.members) (n.vx = (n.vx ?? 0) - dx * f), (n.vy = (n.vy ?? 0) - dy * f)
+        for (const n of b.members) (n.vx = (n.vx ?? 0) + dx * f), (n.vy = (n.vy ?? 0) + dy * f)
+      }
+  }
+  force.initialize = (n: N[]) => void (nodes = n)
   return force
 }
 
+function shapePath(ctx: CanvasRenderingContext2D, shape: KindShape, x: number, y: number, r: number) {
+  ctx.beginPath()
+  if (shape === "circle") ctx.arc(x, y, r, 0, Math.PI * 2)
+  else if (shape === "square") ctx.roundRect(x - r, y - r, r * 2, r * 2, r * 0.32)
+  else if (shape === "diamond") {
+    const d = r * 1.2
+    ctx.moveTo(x, y - d), ctx.lineTo(x + d, y), ctx.lineTo(x, y + d), ctx.lineTo(x - d, y)
+  } else
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i - Math.PI / 6
+      ctx[i ? "lineTo" : "moveTo"](x + Math.cos(a) * r * 1.08, y + Math.sin(a) * r * 1.08)
+    }
+  ctx.closePath()
+}
+
 /**
- * Honest relationship graph: entities are dots, relationships are links, and
- * the layout and the bubbles come from the data (force simulation + community
- * detection). The camera frames the graph once when it first has content and
- * never moves on its own afterwards, so streamed updates don't yank it.
+ * Relationship graph on react-force-graph-2d: the library owns the simulation,
+ * pan/zoom, hit-testing and hover; this file only adds what it doesn't have —
+ * shapes + glyphs per entity kind, community bubbles, the dotted grid, and the
+ * hover dossier. Communities come from the relationships (graph-model).
+ * The camera frames the graph once and never moves on its own afterwards.
  */
 export function NetworkGraph({
   entities,
@@ -90,48 +145,30 @@ export function NetworkGraph({
 }) {
   const { locale, dir, t } = useLocale()
   const { legendOpen } = useWorkspace()
+  const { resolvedTheme } = useTheme()
   const graph = React.useMemo(() => buildDotGraph(entities, relationships), [entities, relationships])
 
   const wrapRef = React.useRef<HTMLDivElement>(null)
-  const svgRef = React.useRef<SVGSVGElement>(null)
-  const simRef = React.useRef<Simulation<SimNode, SimLink> | null>(null)
-  const nodesRef = React.useRef(new Map<string, SimNode>())
-  const zoomRef = React.useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null)
-  const fittedRef = React.useRef(false)
-  const raf = React.useRef(0)
-  const [, setFrame] = React.useState(0)
+  const fgRef = React.useRef<FG | undefined>(undefined)
+  const nodesRef = React.useRef(new Map<string, N>())
+  const fitted = React.useRef(false)
+  const pointer = React.useRef({ x: 0, y: 0 })
+  const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined)
   const [size, setSize] = React.useState({ w: 0, h: 0 })
-  const [view, setView] = React.useState<ZoomTransform>(zoomIdentity)
-  const [hovered, setHovered] = React.useState<string | null>(null)
-  const [focused, setFocused] = React.useState<string | null>(null)
-  const reduced = React.useRef(false)
-  const kRef = React.useRef(1)
+  const [hoverId, setHoverId] = React.useState<string | null>(null)
+  const [card, setCard] = React.useState<{ id: string; x: number; y: number } | null>(null)
+  const [, setSprites] = React.useState(0)
+  const [reduced, setReduced] = React.useState(false)
+  const palette = React.useMemo<Palette | null>(
+    () => (wrapRef.current ? readPalette(wrapRef.current) : null),
+    // re-read when the theme flips; size.w gates the first read until mounted
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [resolvedTheme, size.w > 0]
+  )
+  const onSprite = React.useCallback(() => setSprites((n) => n + 1), [])
 
-  const bump = React.useCallback(() => {
-    cancelAnimationFrame(raf.current)
-    raf.current = requestAnimationFrame(() => setFrame((f) => f + 1))
-  }, [])
-
-  /* ---- simulation: created once ---- */
   React.useEffect(() => {
-    reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const sim = forceSimulation<SimNode>()
-      .force("charge", forceManyBody<SimNode>().strength(-720).distanceMax(900))
-      .force("collide", forceCollide<SimNode>((n) => n.r + 30))
-      .force("x", forceX<SimNode>(0).strength(0.035))
-      .force("y", forceY<SimNode>(0).strength(0.035))
-      .force("community", communityForce(0.22))
-      .alphaDecay(0.035)
-      .on("tick", bump)
-    simRef.current = sim
-    return () => {
-      sim.stop()
-      cancelAnimationFrame(raf.current)
-    }
-  }, [bump])
-
-  /* ---- size ---- */
-  React.useEffect(() => {
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches)
     const el = wrapRef.current
     if (!el) return
     const ro = new ResizeObserver(([e]) => e && setSize({ w: e.contentRect.width, h: e.contentRect.height }))
@@ -139,271 +176,308 @@ export function NetworkGraph({
     return () => ro.disconnect()
   }, [])
 
-  /* ---- data → simulation (existing dots keep their place; new ones enter beside a neighbour) ---- */
-  React.useEffect(() => {
-    const sim = simRef.current
-    if (!sim) return
-    const prev = nodesRef.current
-    const next = new Map<string, SimNode>()
-    const neighbours = (id: string) =>
-      graph.links.flatMap((l) => (l.source === id ? [l.target] : l.target === id ? [l.source] : []))
+  /* ---- graph data: node objects persist, so the library keeps their positions ---- */
+  const data = React.useMemo(() => {
+    const next = new Map<string, N>()
     for (const n of graph.nodes) {
-      const old = prev.get(n.id)
-      let x = old?.x, y = old?.y
-      if (x === undefined || y === undefined) {
-        const anchor = neighbours(n.id).map((id) => prev.get(id)).find((p) => p?.x !== undefined)
-        const a = (hash(n.id) % 360) * (Math.PI / 180)
-        x = (anchor?.x ?? 0) + Math.cos(a) * 60
-        y = (anchor?.y ?? 0) + Math.sin(a) * 60
-      }
-      next.set(n.id, { id: n.id, r: dotRadius(n.degree), community: n.community, x, y, vx: old?.vx, vy: old?.vy })
+      const old = nodesRef.current.get(n.id)
+      next.set(n.id, Object.assign(old ?? ({ id: n.id } as N), { entity: n.entity, degree: n.degree, community: n.community, r: dotRadius(n.degree) }))
     }
     nodesRef.current = next
-    const nodes = [...next.values()]
-    const links: SimLink[] = graph.links.map((l) => ({ id: l.id, source: l.source, target: l.target }))
-    const byId = new Map(graph.links.map((l) => [l.id, l]))
-    sim.nodes(nodes)
-    sim.force(
-      "link",
-      forceLink<SimNode, SimLink>(links)
-        .id((n) => n.id)
-        .distance((l) => DISTANCE[byId.get(l.id)?.relationship.strength ?? "weak"])
-        .strength((l) => (byId.get(l.id)?.relationship.strength === "weak" ? 0.25 : 0.6))
-    )
-    if (reduced.current || !fittedRef.current) sim.stop()
-    else sim.alpha(0.25).restart()
-    bump()
-  }, [graph, bump])
+    return {
+      nodes: [...next.values()],
+      links: graph.links.map((l) => ({ id: l.id, source: l.source, target: l.target, relationship: l.relationship })) as unknown as L[],
+    }
+  }, [graph])
 
-  /* ---- camera: pan / pinch only by the operator ---- */
-  const fit = React.useCallback(() => {
-    const svg = svgRef.current, z = zoomRef.current
-    const nodes = [...nodesRef.current.values()]
-    if (!svg || !z || nodes.length === 0 || size.w === 0) return
-    const pad = BUBBLE_PAD + MARGIN
-    const LABEL = 90 // labels can sit beside a dot; keep them inside the frame
-    const xs = nodes.flatMap((n) => [(n.x ?? 0) - n.r - pad - LABEL * 0.6, (n.x ?? 0) + n.r + pad + LABEL])
-    const ys = nodes.flatMap((n) => [(n.y ?? 0) - n.r - pad, (n.y ?? 0) + n.r + pad])
-    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
-    const room = legend && legendOpen ? LEGEND_ROOM : 0
-    const start = locale === "ar" ? 0 : room // free area starts after the legend on the start side
-    const freeW = size.w - room
-    const k = Math.min(1.5, freeW / (x1 - x0), size.h / (y1 - y0))
-    const tx = start + (freeW - (x1 - x0) * k) / 2 - x0 * k
-    const ty = (size.h - (y1 - y0) * k) / 2 - y0 * k
-    select(svg).call(z.transform, zoomIdentity.translate(tx, ty).scale(k))
-  }, [size, legend, legendOpen, locale])
-
+  /* ---- forces: the graph only mounts once size and palette are known, so configure then ---- */
+  const ready = size.w > 0 && !!palette
   React.useEffect(() => {
-    const svg = svgRef.current
-    if (!svg) return
-    const z = zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.2, 3])
-      .filter((e: Event) => e.type !== "wheel" && !(e as MouseEvent).button)
-      .on("zoom", (e) => {
-        kRef.current = e.transform.k
-        setView(e.transform)
-      })
-    zoomRef.current = z
-    const sel = select(svg).call(z)
-    // Two-finger scroll pans; pinch / ctrl+scroll zooms.
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault()
-      if (e.ctrlKey || e.metaKey) {
-        const r = svg.getBoundingClientRect()
-        sel.call(z.scaleBy, Math.exp(-e.deltaY * 0.01), [e.clientX - r.left, e.clientY - r.top])
-      } else sel.call(z.translateBy, -e.deltaX / kRef.current, -e.deltaY / kRef.current)
+    const fg = fgRef.current
+    if (!fg || !ready) return
+    ;(fg.d3Force("charge") as unknown as { strength: (n: number) => { distanceMax: (n: number) => void } })?.strength(-720).distanceMax(900)
+    const link = fg.d3Force("link") as unknown as {
+      distance: (f: (l: L) => number) => { strength: (f: (l: L) => number) => void }
     }
-    svg.addEventListener("wheel", onWheel, { passive: false })
-    return () => {
-      svg.removeEventListener("wheel", onWheel)
-      sel.on(".zoom", null)
-    }
-  }, [])
+    link?.distance((l) => DISTANCE[l.relationship?.strength ?? "weak"]).strength((l) => (l.relationship?.strength === "weak" ? 0.25 : 0.6))
+    fg.d3Force("center", null)
+    fg.d3Force("x", forceX(0).strength(0.035) as never)
+    fg.d3Force("y", forceY(0).strength(0.035) as never)
+    fg.d3Force("collide", forceCollide<N>((n) => (n as N).r + 30) as never)
+    fg.d3Force("community", communityForce(0.4) as never)
+    fg.d3ReheatSimulation()
+  }, [ready])
 
-  /* ---- first frame: settle off-screen, then frame once ---- */
-  React.useEffect(() => {
-    const sim = simRef.current
-    if (!sim || fittedRef.current || graph.nodes.length === 0 || size.w === 0) return
-    sim.alpha(1).stop()
-    sim.tick(260)
-    fittedRef.current = true
-    fit()
-    bump()
-  }, [graph, size, fit, bump])
+  /* ---- camera: frame once, leaving room for the legend and for labels ---- */
+  const fit = React.useCallback(
+    (ms = 0) => {
+      const fg = fgRef.current
+      if (!fg || size.w === 0 || data.nodes.length === 0) return
+      const bb = fg.getGraphBbox()
+      const pad = BUBBLE_PAD + FIT_PAD
+      const w = bb.x[1] - bb.x[0] + pad * 2 + LABEL_ROOM * 1.5
+      const h = bb.y[1] - bb.y[0] + pad * 2
+      const room = legend && legendOpen ? LEGEND_ROOM : 0
+      const k = Math.min(1.5, (size.w - room) / w, size.h / h)
+      const shift = (locale === "ar" ? -room : room) / 2 // free area's centre vs the canvas centre, in px
+      fg.zoom(k, ms)
+      fg.centerAt((bb.x[0] + bb.x[1]) / 2 - shift / k, (bb.y[0] + bb.y[1]) / 2, ms)
+    },
+    [size, data.nodes.length, legend, legendOpen, locale]
+  )
 
-  const zoomBy = (f: number) => svgRef.current && zoomRef.current && select(svgRef.current).call(zoomRef.current.scaleBy, f)
+  const zoomBy = (f: number) => fgRef.current && fgRef.current.zoom(fgRef.current.zoom() * f, 200)
 
-  /* ---- derived drawing data ---- */
-  const nodeOf = (id: string) => nodesRef.current.get(id)
-  const active = hovered ?? focused
-  const focus = active ?? selectedId
-  const nearby = new Set<string>()
-  if (focus) {
-    nearby.add(focus)
-    for (const l of graph.links) {
-      if (l.source === focus) nearby.add(l.target)
-      if (l.target === focus) nearby.add(l.source)
-    }
+  /* ---- hover dossier: shown after a short dwell, hidden on any movement away ---- */
+  const hoverNode = (n: N | null) => {
+    clearTimeout(timer.current)
+    setHoverId(n?.id ?? null)
+    setCard(null)
+    if (n) timer.current = setTimeout(() => setCard({ id: n.id, ...pointer.current }), HOVER_DELAY)
   }
+  React.useEffect(() => () => clearTimeout(timer.current), [])
+
+  const focus = hoverId ?? selectedId
+  const near = React.useMemo(() => {
+    const s = new Set<string>()
+    if (focus) {
+      s.add(focus)
+      for (const l of graph.links) {
+        if (l.source === focus) s.add(l.target)
+        if (l.target === focus) s.add(l.source)
+      }
+    }
+    return s
+  }, [focus, graph.links])
+
   const label = (e: GraphEntity) => entityLabel(e, locale) ?? e.id
-  // Labels point away from their cluster's centre, so neighbours in a group don't print over each other.
-  const centroids = new Map<number, { x: number; y: number; n: number }>()
-  for (const n of graph.nodes) {
-    const s = nodeOf(n.id)
-    if (!s) continue
-    const c = centroids.get(n.community) ?? { x: 0, y: 0, n: 0 }
-    c.x += s.x ?? 0
-    c.y += s.y ?? 0
-    c.n++
-    centroids.set(n.community, c)
+  const hubOf = React.useMemo(() => {
+    const m = new Map<number, { entity: GraphEntity; degree: number }>()
+    for (const n of graph.nodes) if (!m.get(n.community) || n.degree > m.get(n.community)!.degree) m.set(n.community, n)
+    return m
+  }, [graph.nodes])
+
+  /* ---- drawing ---- */
+  const drawBackdrop = (ctx: CanvasRenderingContext2D, scale: number) => {
+    const fg = fgRef.current
+    if (!fg || !palette) return
+    // The library lays nodes out lazily; frame only once every node has a real position.
+    if (!fitted.current && data.nodes.length > 0 && size.w > 0 && data.nodes.every((n) => Number.isFinite(n.x) && Number.isFinite(n.y))) {
+      fitted.current = true
+      fit(0)
+    }
+    // dotted grid, in graph space so it pans and zooms with the camera
+    const a = fg.screen2GraphCoords(0, 0), b = fg.screen2GraphCoords(size.w, size.h)
+    let step = 24
+    while (step * scale < 12) step *= 2
+    ctx.fillStyle = palette.grid
+    const r = 0.9 / scale
+    for (let x = Math.floor(a.x / step) * step; x < b.x; x += step)
+      for (let y = Math.floor(a.y / step) * step; y < b.y; y += step) ctx.fillRect(x - r, y - r, r * 2, r * 2)
+
+    // community bubbles ("investigation epics")
+    graph.communities.forEach((members, ci) => {
+      if (members.length < 2) return
+      const pts = members.flatMap((id) => {
+        const n = nodesRef.current.get(id)
+        return n?.x === undefined ? [] : [{ x: n.x, y: n.y ?? 0, r: n.r }]
+      })
+      if (pts.length < 2) return
+      const color = palette.community[ci % palette.community.length]!
+      const hull = bubblePoints(pts, BUBBLE_PAD)
+      const mid = (i: number): [number, number] => {
+        const p = hull[i]!, q = hull[(i + 1) % hull.length]!
+        return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]
+      }
+      ctx.beginPath()
+      ctx.moveTo(...mid(hull.length - 1))
+      hull.forEach((p, i) => ctx.quadraticCurveTo(p[0], p[1], ...mid(i)))
+      ctx.closePath()
+      const dim = focus && !members.some((m) => near.has(m))
+      ctx.globalAlpha = dim ? 0.35 : 1
+      ctx.fillStyle = color
+      ctx.globalAlpha *= 0.11
+      ctx.fill()
+      ctx.globalAlpha = dim ? 0.2 : 0.6
+      ctx.strokeStyle = color
+      ctx.lineWidth = 1.5
+      ctx.stroke()
+
+      // epic label: glyph + hub name + member count, centred above the bubble
+      const hub = hubOf.get(ci)
+      if (hub && scale >= 0.4) {
+        const top = pts.reduce((p, q) => (q.y - q.r < p.y - p.r ? q : p))
+        const fs = Math.min(18, Math.max(6, 10.5 / scale))
+        const text = `${clip(label(hub.entity), 26).toUpperCase()} · ${members.length}`
+        ctx.font = `600 ${fs}px ui-sans-serif, system-ui, sans-serif`
+        const tw = ctx.measureText(text).width, gw = fs * 1.2
+        const cx = top.x, cy = top.y - top.r - BUBBLE_PAD - fs * 0.9
+        ctx.globalAlpha = dim ? 0.4 : 1
+        const img = epicSprite(color, onSprite)
+        if (img.complete) ctx.drawImage(img, cx - (tw + gw) / 2, cy - fs * 0.6, fs * 1.1, fs * 1.1)
+        ctx.fillStyle = color
+        ctx.textBaseline = "middle"
+        ctx.textAlign = "left"
+        ctx.direction = isRtlText(text) ? "rtl" : "ltr"
+        ctx.fillText(text, cx - (tw + gw) / 2 + gw, cy)
+      }
+      ctx.globalAlpha = 1
+    })
   }
-  const labelSpot = (n: { id: string; community: number }, s: SimNode) => {
-    const c = centroids.get(n.community)
-    if (!c || c.n < 2) return { x: 0, y: s.r + 20, anchor: "middle" as const }
-    const dx = (s.x ?? 0) - c.x / c.n, dy = (s.y ?? 0) - c.y / c.n
-    if (Math.abs(dx) > Math.abs(dy) * 0.7) return { x: Math.sign(dx) * (s.r + 12), y: 4, anchor: dx > 0 ? ("start" as const) : ("end" as const) }
-    return { x: 0, y: dy > 0 ? s.r + 20 : -(s.r + 12), anchor: "middle" as const }
+
+  const drawNode = (node: N, ctx: CanvasRenderingContext2D, scale: number) => {
+    if (!palette || node.x === undefined || node.y === undefined) return
+    const { x, y, r } = node
+    const style = kindStyle(node.entity.kind)
+    const color = palette.kind[style.group]!
+    const faded = !!focus && !near.has(node.id)
+    const selected = node.id === selectedId
+    ctx.globalAlpha = faded ? 0.28 : 1
+
+    shapePath(ctx, style.shape, x, y, r + 6) // soft halo
+    ctx.fillStyle = color
+    ctx.globalAlpha *= 0.16
+    ctx.fill()
+    ctx.globalAlpha = faded ? 0.28 : 1
+
+    if (node.entity.support && node.entity.support !== "observed") {
+      shapePath(ctx, style.shape, x, y, r + 3.5) // dashed ring = not directly observed
+      ctx.setLineDash([3, 3])
+      ctx.strokeStyle = color
+      ctx.lineWidth = 1.25
+      ctx.stroke()
+      ctx.setLineDash([])
+    }
+    shapePath(ctx, style.shape, x, y, r)
+    ctx.fillStyle = color
+    ctx.fill()
+    ctx.strokeStyle = palette.card
+    ctx.lineWidth = 2
+    ctx.stroke()
+
+    const glyph = kindSprite(node.entity.kind, onSprite)
+    if (glyph.complete) {
+      const g = r * 1.15
+      ctx.drawImage(glyph, x - g / 2, y - g / 2, g, g)
+    }
+    if (selected) {
+      shapePath(ctx, style.shape, x, y, r + 8)
+      ctx.strokeStyle = palette.primary
+      ctx.lineWidth = 2.5
+      ctx.stroke()
+    }
+
+    if (scale >= 0.55 || near.has(node.id)) {
+      const text = clip(label(node.entity))
+      const fs = Math.min(16, Math.max(6, 11 / scale))
+      ctx.font = `500 ${fs}px ui-sans-serif, system-ui, sans-serif`
+      ctx.textAlign = "center"
+      ctx.textBaseline = "top"
+      ctx.direction = isRtlText(text) ? "rtl" : "ltr"
+      ctx.lineJoin = "round"
+      ctx.lineWidth = 3.5 / Math.max(1, scale)
+      ctx.strokeStyle = palette.canvas
+      ctx.strokeText(text, x, y + r + 9)
+      ctx.fillStyle = palette.fg
+      ctx.fillText(text, x, y + r + 9)
+    }
+    ctx.globalAlpha = 1
   }
+
+  const drawLinkLabel = (link: L, ctx: CanvasRenderingContext2D, scale: number) => {
+    const a = link.source as N, b = link.target as N
+    if (!palette || typeof a !== "object" || typeof b !== "object") return
+    if (selectedId !== a.id && selectedId !== b.id) return
+    const r = link.relationship
+    const text = `${r.kind.replaceAll("_", " ")}${r.strength ? ` · ${t.network[r.strength]}` : ""}`
+    const fs = Math.min(14, Math.max(6, 10 / scale))
+    ctx.font = `${fs}px ui-sans-serif, system-ui, sans-serif`
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.lineWidth = 3 / Math.max(1, scale)
+    ctx.strokeStyle = palette.canvas
+    const mx = ((a.x ?? 0) + (b.x ?? 0)) / 2, my = ((a.y ?? 0) + (b.y ?? 0)) / 2
+    ctx.strokeText(text, mx, my)
+    ctx.fillStyle = palette.fg
+    ctx.fillText(text, mx, my)
+  }
+
+  const linkStyle = (l: L) => {
+    const a = l.source as N | string, b = l.target as N | string
+    const ids = [typeof a === "object" ? a.id : a, typeof b === "object" ? b.id : b]
+    const on = !!focus && ids.includes(focus)
+    const base = l.relationship.strength ? STRENGTH_STYLE[l.relationship.strength] : NEUTRAL_EDGE
+    return { on, faded: !!focus && !on, width: (on ? 1.5 : 1) * base.width, color: l.relationship.strength && palette ? palette.strength[l.relationship.strength] : palette?.muted ?? "#888" }
+  }
+
+  const cardEntity = card ? nodesRef.current.get(card.id)?.entity : undefined
+  const cardNode = card ? nodesRef.current.get(card.id) : undefined
+  const hub = cardNode ? hubOf.get(cardNode.community) : undefined
+  const epic = cardNode && graph.communities[cardNode.community]!.length > 1 && hub ? label(hub.entity) : undefined
 
   return (
-    // Canvas math is physical; keep it LTR even in Arabic. Text uses dir="auto".
-    <div ref={wrapRef} dir="ltr" className="relative h-full min-h-0 overflow-hidden" style={{ background: "var(--canvas)" }}>
-      <svg
-        ref={svgRef}
-        className="absolute inset-0 size-full touch-none select-none"
-        role="group"
-        aria-label={t.network.graphCanvas}
-      >
-        <defs>
-          <pattern id="graph-dots" width={24 * view.k} height={24 * view.k} x={view.x} y={view.y} patternUnits="userSpaceOnUse">
-            <circle cx={1} cy={1} r={Math.max(0.8, 1.2 * view.k)} style={{ fill: "var(--grid-dot)" }} />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#graph-dots)" />
+    // Canvas math is physical; keep it LTR even in Arabic.
+    <div
+      ref={wrapRef}
+      dir="ltr"
+      className="relative h-full min-h-0 overflow-hidden"
+      style={{ background: "var(--canvas)" }}
+      role="img"
+      aria-label={`${t.network.graphCanvas}: ${graph.nodes.length} / ${graph.links.length}`}
+      onPointerMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        pointer.current = {
+          x: Math.min(Math.max(8, e.clientX - r.left + 16), Math.max(8, r.width - CARD.w - 8)),
+          y: Math.min(Math.max(8, e.clientY - r.top + 18), Math.max(8, r.height - CARD.h - 8)),
+        }
+      }}
+      onPointerLeave={() => hoverNode(null)}
+    >
+      {size.w > 0 && palette && (
+        <ForceGraph2D<GNode, GLink>
+          ref={fgRef}
+          width={size.w}
+          height={size.h}
+          graphData={data}
+          backgroundColor="rgba(0,0,0,0)"
+          nodeLabel={() => ""}
+          nodeCanvasObjectMode={() => "replace"}
+          nodeCanvasObject={drawNode}
+          nodePointerAreaPaint={(node, color, ctx) => {
+            ctx.fillStyle = color
+            ctx.beginPath()
+            ctx.arc(node.x ?? 0, node.y ?? 0, (node as N).r + 8, 0, Math.PI * 2)
+            ctx.fill()
+          }}
+          linkColor={(l) => {
+            const s = linkStyle(l)
+            return s.on ? palette.primary : s.color
+          }}
+          linkWidth={(l) => linkStyle(l).width}
+          linkLineDash={(l) => (l.relationship.support === "observed" ? null : INFERRED_DASH.split(" ").map(Number))}
+          linkCanvasObjectMode={() => "after"}
+          linkCanvasObject={drawLinkLabel}
+          onRenderFramePre={drawBackdrop}
+          onNodeHover={(n) => hoverNode((n as N) ?? null)}
+          onNodeClick={(n) => onSelect(String(n.id))}
+          onZoom={() => hoverNode(null)}
+          enableNodeDrag={false}
+          autoPauseRedraw={false}
+          warmupTicks={200}
+          cooldownTicks={reduced ? 0 : 400}
+          d3AlphaDecay={0.035}
+        />
+      )}
 
-        <g transform={view.toString()}>
-          {/* community bubbles */}
-          {graph.communities.map((members, ci) => {
-            if (members.length < 2) return null
-            const pts = members.flatMap((id) => {
-              const n = nodeOf(id)
-              return n ? [{ x: n.x ?? 0, y: n.y ?? 0, r: n.r }] : []
-            })
-            if (pts.length < 2) return null
-            const color = `var(--community-${(ci % COMMUNITY_COLORS) + 1})`
-            const top = pts.reduce((a, b) => (b.y - b.r < a.y - a.r ? b : a))
-            const hub = graph.nodes.filter((n) => n.community === ci).sort((a, b) => b.degree - a.degree)[0]
-            const dim = focus && !members.some((m) => nearby.has(m))
-            return (
-              <g key={ci} style={{ opacity: dim ? 0.35 : 1, transition: "opacity 150ms" }}>
-                <path
-                  d={bubbleLine(bubblePoints(pts, BUBBLE_PAD)) ?? ""}
-                  style={{
-                    fill: `color-mix(in oklch, ${color} 11%, transparent)`,
-                    stroke: `color-mix(in oklch, ${color} 55%, transparent)`,
-                    strokeWidth: 1.5,
-                  }}
-                />
-                {hub && (
-                  <text
-                    x={top.x}
-                    y={top.y - top.r - BUBBLE_PAD - 7}
-                    textAnchor="middle"
-                    className="text-[10px] font-semibold uppercase tracking-wide [unicode-bidi:plaintext]"
-                    style={{ fill: color }}
-                  >
-                    {clip(label(hub.entity), 28)} · {members.length}
-                  </text>
-                )}
-              </g>
-            )
-          })}
-
-          {/* links */}
-          {graph.links.map((l) => {
-            const a = nodeOf(l.source), b = nodeOf(l.target)
-            if (!a || !b) return null
-            const r = l.relationship
-            const base = r.strength ? STRENGTH_STYLE[r.strength] : NEUTRAL_EDGE
-            const on = focus === l.source || focus === l.target
-            const labelled = selectedId === l.source || selectedId === l.target
-            const faded = !!focus && !on
-            const inferred = r.support !== "observed"
-            const mx = ((a.x ?? 0) + (b.x ?? 0)) / 2, my = ((a.y ?? 0) + (b.y ?? 0)) / 2
-            return (
-              <g key={l.id} style={{ opacity: faded ? 0.14 : 1, transition: "opacity 150ms" }}>
-                <line
-                  x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-                  strokeLinecap="round"
-                  strokeDasharray={inferred ? INFERRED_DASH : undefined}
-                  style={{ stroke: on ? "var(--primary)" : base.color, strokeWidth: (on ? 1.5 : 1) * base.width }}
-                >
-                  <title>{r.rationaleVariants?.[locale] ?? r.rationale ?? r.kind}</title>
-                </line>
-                {labelled && (
-                  <text
-                    x={mx} y={my - 5} textAnchor="middle"
-                    className="pointer-events-none text-[10px] [unicode-bidi:plaintext]"
-                    style={{ fill: "var(--foreground)", paintOrder: "stroke", stroke: "var(--canvas)", strokeWidth: 3 }}
-                  >
-                    {r.kind.replaceAll("_", " ")}{r.strength ? ` · ${t.network[r.strength]}` : ""}
-                  </text>
-                )}
-              </g>
-            )
-          })}
-
-          {/* dots */}
-          {graph.nodes.map((n) => {
-            const s = nodeOf(n.id)
-            if (!s) return null
-            const e = n.entity
-            const fill = `var(--kind-${kindGroup(e.kind)})`
-            const isSel = n.id === selectedId
-            const faded = !!focus && !nearby.has(n.id)
-            const showLabel = view.k >= 0.55 || nearby.has(n.id)
-            const spot = labelSpot(n, s)
-            return (
-              <g
-                key={n.id}
-                transform={`translate(${s.x ?? 0} ${s.y ?? 0})`}
-                tabIndex={0}
-                role="button"
-                aria-label={`${e.kind}: ${label(e)}`}
-                aria-pressed={isSel}
-                className="cursor-pointer outline-none"
-                style={{ opacity: faded ? 0.28 : 1, transition: "opacity 150ms" }}
-                onPointerEnter={() => setHovered(n.id)}
-                onPointerLeave={() => setHovered(null)}
-                onFocus={() => setFocused(n.id)}
-                onBlur={() => setFocused(null)}
-                onClick={() => onSelect(n.id)}
-                onKeyDown={(ev) => (ev.key === "Enter" || ev.key === " ") && (ev.preventDefault(), onSelect(n.id))}
-              >
-                {(isSel || focused === n.id) && (
-                  <circle r={s.r + 7} fill="none" style={{ stroke: "var(--primary)", strokeWidth: 2.5 }} />
-                )}
-                {e.support && e.support !== "observed" && (
-                  <circle r={s.r + 3.5} fill="none" strokeDasharray="3 3" style={{ stroke: fill, strokeWidth: 1.25 }} />
-                )}
-                <circle r={s.r + 6} style={{ fill: `color-mix(in oklch, ${fill} 16%, transparent)` }} />
-                <circle r={s.r} style={{ fill, stroke: "var(--card)", strokeWidth: 2 }} />
-                {showLabel && (
-                  <text
-                    x={spot.x} y={spot.y} textAnchor={spot.anchor}
-                    className="text-[11px] font-medium [unicode-bidi:plaintext]"
-                    style={{ fill: "var(--foreground)", paintOrder: "stroke", stroke: "var(--canvas)", strokeWidth: 3.5 }}
-                  >
-                    {clip(label(e))}
-                  </text>
-                )}
-                <title>{`${label(e)} — ${e.kind}`}</title>
-              </g>
-            )
-          })}
-        </g>
-      </svg>
+      {cardEntity && card && (
+        <EntityHoverCard
+          entity={cardEntity}
+          links={cardNode?.degree ?? 0}
+          epic={epic}
+          x={card.x}
+          y={card.y}
+        />
+      )}
 
       {overlay && <div className="absolute inset-x-0 top-3 flex justify-center">{overlay}</div>}
       {legend && (
@@ -420,11 +494,9 @@ export function NetworkGraph({
           <Button variant="ghost" size="icon-sm" aria-label={t.network.zoomOut} onClick={() => zoomBy(1 / 1.3)}><IconMinus /></Button>
         </Hint>
         <Hint label={t.network.fit} side="right">
-          <Button variant="ghost" size="icon-sm" aria-label={t.network.fit} onClick={fit}><IconFocus2 /></Button>
+          <Button variant="ghost" size="icon-sm" aria-label={t.network.fit} onClick={() => fit(300)}><IconFocus2 /></Button>
         </Hint>
       </div>
     </div>
   )
 }
-
-export type { DotGraph }

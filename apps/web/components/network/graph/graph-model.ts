@@ -1,6 +1,6 @@
 import Graph from "graphology"
 import louvain from "graphology-communities-louvain"
-import { polygonHull } from "d3"
+import { polygonHull } from "d3-polygon"
 
 import type { GraphEntity, GraphRelationship } from "@/lib/api/types"
 
@@ -83,7 +83,7 @@ function seeded(seed: number) {
   }
 }
 
-export const dotRadius = (degree: number) => 7 + Math.min(degree, 6) * 1.6
+export const dotRadius = (degree: number) => 13 + Math.min(degree, 6) * 1.8
 
 /**
  * Closed outline of a bubble around a community: the hull of points sampled on
