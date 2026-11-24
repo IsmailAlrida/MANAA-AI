@@ -6,15 +6,15 @@ import { Badge } from "@workspace/ui/components/badge"
 import { useLocale } from "@/lib/i18n"
 import type { TicketViewStatus } from "@/lib/workspace/derive"
 import { Hint } from "../hint"
+import { tone } from "../tone"
 
 const ICON = { open: IconCircleDot, overdue: IconAlarm, closed: IconArchive }
 
 export function TicketStatusBadge({ status }: { status: TicketViewStatus }) {
   const { t } = useLocale()
-  const variant = status === "overdue" ? "destructive" : status === "closed" ? "secondary" : "default"
   const Icon = ICON[status]
   const badge = (
-    <Badge variant={variant} tabIndex={status === "overdue" ? 0 : undefined}>
+    <Badge variant="outline" style={tone(`status-${status}`)} tabIndex={status === "overdue" ? 0 : undefined}>
       <Icon />
       {t.tickets[status]}
     </Badge>

@@ -6,6 +6,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import type { GraphRelationship } from "@/lib/api/types"
 import { useLocale } from "@/lib/i18n"
 import { Hint } from "../../hint"
+import { INFERRED_DASH, NEUTRAL_EDGE, STRENGTH_STYLE } from "./edge-style"
 
 export type EvidenceEdgeType = Edge<{ relationship: GraphRelationship }, "evidence">
 
@@ -16,6 +17,7 @@ export function EvidenceEdge(props: EdgeProps<EvidenceEdgeType>) {
   const r = data?.relationship
   const { locale, t } = useLocale()
   const observed = r?.support === "observed"
+  const base = r?.strength ? STRENGTH_STYLE[r.strength] : NEUTRAL_EDGE
 
   return (
     <>
@@ -24,9 +26,9 @@ export function EvidenceEdge(props: EdgeProps<EvidenceEdgeType>) {
         path={path}
         markerEnd={markerEnd}
         style={{
-          stroke: selected ? "var(--primary)" : "var(--muted-foreground)",
-          strokeWidth: selected ? 2 : 1.25,
-          strokeDasharray: observed ? undefined : "6 4",
+          stroke: selected ? "var(--primary)" : base.color,
+          strokeWidth: selected ? base.width + 1 : base.width,
+          strokeDasharray: observed ? undefined : INFERRED_DASH,
         }}
       />
       {r && (

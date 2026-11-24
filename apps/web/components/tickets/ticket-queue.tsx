@@ -19,6 +19,7 @@ import { filterTickets, ticketViewStatus, type QueueFilter } from "@/lib/workspa
 import { ticketText } from "@/lib/api/types"
 import { useNow, useWorkspace, useWorkspaceActions } from "@/lib/workspace/store"
 import { Hint } from "../hint"
+import { PriorityBadge } from "../priority-badge"
 import { TicketStatusBadge } from "./ticket-status-badge"
 
 const FILTERS: QueueFilter[] = ["all", "open", "overdue", "closed"]
@@ -109,9 +110,7 @@ export function TicketQueue() {
                 </TableCell>
                 {hasPriority && (
                   <TableCell>
-                    <Hint label={text.priorityReason ?? t.hint.noPriority}>
-                      <span tabIndex={0}>{tk.priority?.level ?? "—"}</span>
-                    </Hint>
+                    <PriorityBadge level={tk.priority?.level} reason={text.priorityReason} />
                   </TableCell>
                 )}
                 <TableCell>{fmtDate(tk.closingDate)}</TableCell>

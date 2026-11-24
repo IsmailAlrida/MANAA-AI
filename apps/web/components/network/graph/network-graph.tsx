@@ -18,19 +18,28 @@ import {
 
 import { entityLabel, type GraphEntity, type GraphRelationship } from "@/lib/api/types"
 import { useLocale } from "@/lib/i18n"
+import { useWorkspace } from "@/lib/workspace/store"
 import { EntityNode, type EntityNodeType } from "./entity-node"
 import { EvidenceEdge, type EvidenceEdgeType } from "./evidence-edge"
 import { placeNewNodes } from "./layout"
 
 const nodeTypes = { entity: EntityNode }
-const FIT = { padding: "48px", maxZoom: 1 } as const
+const MARGIN = "48px"
+const LEGEND_ROOM = "296px" // 16rem legend plus gutters
+
+/** Frame the graph clear of the legend, which sits on the start side (left in LTR, right in RTL). */
+const fitOptions = (side: "left" | "right", reserveLegend: boolean) =>
+  ({
+    padding: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN, [side]: reserveLegend ? LEGEND_ROOM : MARGIN },
+    maxZoom: 1,
+  }) as const
 
 /**
  * `fitView` only runs at init. If the canvas mounted empty (fresh workspace,
  * offline, loading), frame the graph once when the first nodes arrive — and
  * never again, so later streamed upserts don't move the camera.
  */
-function FitOnFirstNodes({ count }: { count: number }) {
+function FitOnFirstNodes({ count, options }: { count: number; options: ReturnType<typeof fitOptions> }) {
   const { fitView } = useReactFlow()
   const measured = useNodesInitialized()
   const fitted = React.useRef(false)
@@ -38,8 +47,8 @@ function FitOnFirstNodes({ count }: { count: number }) {
     // Wait until React Flow has measured node sizes; fitting earlier frames a zero-size graph.
     if (fitted.current || count === 0 || !measured) return
     fitted.current = true
-    void fitView(FIT)
-  }, [count, measured, fitView])
+    void fitView(options)
+  }, [count, measured, fitView, options])
   return null
 }
 
@@ -74,6 +83,7 @@ export function NetworkGraph({
   selectedId,
   onSelect,
   overlay,
+  legend,
 }: {
   entities: GraphEntity[]
   relationships: GraphRelationship[]
@@ -81,9 +91,13 @@ export function NetworkGraph({
   onSelect: (id: string | null) => void
   /** Status content (loading/empty) floated over the grid; the canvas never unmounts. */
   overlay?: React.ReactNode
+  /** Hideable key, pinned to the start side of the canvas. */
+  legend?: React.ReactNode
 }) {
   const { resolvedTheme } = useTheme()
   const { locale } = useLocale()
+  const { legendOpen } = useWorkspace()
+  const fit = React.useMemo(() => fitOptions(locale === "ar" ? "right" : "left", !!legend && legendOpen), [locale, legend, legendOpen])
   // Build the first frame synchronously so `fitView` (init-only) sees real nodes.
   const [initialNodes] = React.useState(() => buildNodes([], entities, relationships, selectedId, locale))
   const [nodes, setNodes, onNodesChange] = useNodesState<EntityNodeType>(initialNodes)
@@ -122,7 +136,7 @@ export function NetworkGraph({
         }}
         forceColorMode={resolvedTheme === "dark" ? "dark" : "light"}
         fitView
-        fitViewOptions={FIT}
+        fitViewOptions={fit}
         // Infinite-canvas feel: drag or two-finger scroll pans, pinch / ctrl+scroll zooms.
         panOnDrag
         panOnScroll
@@ -140,8 +154,9 @@ export function NetworkGraph({
           bgColor="var(--background)"
         />
         <Controls showInteractive={false} />
-        <FitOnFirstNodes count={nodes.length} />
+        <FitOnFirstNodes count={nodes.length} options={fit} />
         {overlay && <Panel position="top-center">{overlay}</Panel>}
+        {legend && <Panel position={locale === "ar" ? "top-right" : "top-left"}>{legend}</Panel>}
       </ReactFlow>
     </div>
   )

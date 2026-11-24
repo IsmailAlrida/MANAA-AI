@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import dynamic from "next/dynamic"
-import { Badge } from "@workspace/ui/components/badge"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@workspace/ui/components/resizable"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
@@ -14,6 +13,7 @@ import { EmptyWorkspace } from "../shell/workspace-gate"
 import { EntityInspector } from "./entity-inspector"
 import { EntityEvidence } from "./entity-evidence"
 import { EntityTable, RelationshipTable } from "./entity-tables"
+import { NetworkLegend } from "./graph/network-legend"
 
 // Canvas is client-only and heavy; keep it out of the initial bundle.
 const NetworkGraph = dynamic(() => import("./graph/network-graph").then((m) => m.NetworkGraph), {
@@ -52,22 +52,14 @@ export function NetworkView() {
           <div className={`absolute inset-0 ${showEntityEvidence && selected ? "invisible pointer-events-none" : ""}`} aria-hidden={showEntityEvidence && !!selected}>
         <Tabs value={ws.networkView} className="h-full gap-0">
           <TabsContent value="graph" className="min-h-0">
-            <div className="flex h-full flex-col">
-            <div className="flex flex-wrap items-center gap-2 px-3 py-2" aria-label={t.network.strengthLegend}>
-              <span className="text-xs text-muted-foreground">{t.network.strength}</span>
-              {(["strong", "medium", "weak"] as const).map((strength) => <Badge key={strength} variant="outline">{t.network[strength]}</Badge>)}
-              <span className="text-xs text-muted-foreground">{t.network.strengthLegend}</span>
-            </div>
-            <div className="min-h-0 flex-1">
-              <NetworkGraph
-                entities={entities}
-                relationships={relationships}
-                selectedId={ws.selectedEntityId}
-                onSelect={selectEntity}
-                overlay={overlay}
-              />
-            </div>
-            </div>
+            <NetworkGraph
+              entities={entities}
+              relationships={relationships}
+              selectedId={ws.selectedEntityId}
+              onSelect={selectEntity}
+              overlay={overlay}
+              legend={<NetworkLegend />}
+            />
           </TabsContent>
           <TabsContent value="entities" className="overflow-auto p-2">
             <EntityTable entities={entities} selectedId={ws.selectedEntityId} onSelect={selectEntity} />

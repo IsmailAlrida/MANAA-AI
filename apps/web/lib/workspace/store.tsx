@@ -59,6 +59,7 @@ export interface WorkspaceState {
   queue: { filter: QueueFilter; search: string }
   selectedEntityId: string | null
   networkView: NetworkViewId
+  legendOpen: boolean
   agentPanelOpen: boolean
 }
 
@@ -77,6 +78,7 @@ type Action =
   | { type: "SELECT_ENTITY"; id: string | null }
   | { type: "SET_AGENT_PANEL"; open: boolean }
   | { type: "SET_NETWORK_VIEW"; view: NetworkViewId }
+  | { type: "SET_LEGEND"; open: boolean }
 
 const initial: WorkspaceState = {
   load: { tag: "loading" },
@@ -89,6 +91,7 @@ const initial: WorkspaceState = {
   queue: { filter: "all", search: "" },
   selectedEntityId: null,
   networkView: "graph",
+  legendOpen: true,
   agentPanelOpen: false,
 }
 
@@ -133,6 +136,8 @@ function reducer(s: WorkspaceState, a: Action): WorkspaceState {
       return { ...s, agentPanelOpen: a.open }
     case "SET_NETWORK_VIEW":
       return { ...s, networkView: a.view }
+    case "SET_LEGEND":
+      return { ...s, legendOpen: a.open }
   }
 }
 
@@ -146,6 +151,7 @@ interface WorkspaceActions {
   selectEntity: (id: string | null) => void
   setAgentPanel: (open: boolean) => void
   setNetworkView: (view: NetworkViewId) => void
+  setLegendOpen: (open: boolean) => void
 }
 
 const StateCtx = React.createContext<WorkspaceState | null>(null)
@@ -309,6 +315,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       selectEntity: (id) => dispatch({ type: "SELECT_ENTITY", id }),
       setAgentPanel: (open) => dispatch({ type: "SET_AGENT_PANEL", open }),
       setNetworkView: (view) => dispatch({ type: "SET_NETWORK_VIEW", view }),
+      setLegendOpen: (open) => dispatch({ type: "SET_LEGEND", open }),
     }),
     [reload]
   )

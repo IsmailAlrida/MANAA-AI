@@ -21,6 +21,7 @@ import { ticketViewStatus } from "@/lib/workspace/derive"
 import { entityLabel, ticketText } from "@/lib/api/types"
 import { useNow, useWorkspace, useWorkspaceActions } from "@/lib/workspace/store"
 import { EvidenceItem, EvidenceRefBadge, SupportBadge } from "../evidence"
+import { PriorityBadge } from "../priority-badge"
 import { WorkspaceGate } from "../shell/workspace-gate"
 import { CloseTicketDialog } from "./close-ticket-dialog"
 import { ClosingDateEditor } from "./closing-date-editor"
@@ -78,7 +79,7 @@ export function TicketDetail({ ticketId }: { ticketId: string }) {
               <h1 id="ticket-title" dir="auto" className="text-xl font-semibold">{text?.title ?? ticket.title}</h1>
               <div className="flex flex-wrap items-center gap-2">
                 <TicketStatusBadge status={ticketViewStatus(ticket, now)} />
-                {ticket.priority && <Badge variant="outline">{ticket.priority.level}</Badge>}
+                {ticket.priority && <PriorityBadge level={ticket.priority.level} />}
                 <code>{ticket.id}</code>
               </div>
               {ticket.priority?.reason && <p className="text-sm text-muted-foreground">{ticket.priority.reason}</p>}

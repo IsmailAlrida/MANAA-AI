@@ -17,15 +17,17 @@ import { ticketText, type ReportBlock } from "@/lib/api/types"
 import { useLocale } from "@/lib/i18n"
 import { useWorkspace } from "@/lib/workspace/store"
 import { Hint } from "./hint"
+import { tone, type Tone } from "./tone"
 
 /** Text label alongside variant so support never relies on colour alone. */
 export function SupportBadge({ support }: { support?: string | null }) {
   const { t } = useLocale()
   if (!support) return null
-  const variant = support === "observed" ? "secondary" : support === "disputed" ? "destructive" : "outline"
+  const toneName = `support-${support}` as Tone
+  const known = support === "observed" || support === "possible" || support === "disputed"
   return (
     <Hint label={t.hint.support[support]}>
-      <Badge variant={variant} tabIndex={0}>
+      <Badge variant="outline" tabIndex={0} style={known ? tone(toneName) : undefined}>
         {support}
       </Badge>
     </Hint>
