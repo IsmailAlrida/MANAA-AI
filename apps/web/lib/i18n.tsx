@@ -5,6 +5,7 @@
  * boundary. Swap for next-intl when message volume grows.
  */
 import * as React from "react"
+import type { ApiErrorKind } from "./api/client"
 
 export type Locale = "en" | "ar"
 
@@ -169,6 +170,17 @@ const en = {
     unavailable: "Assistant not configured",
     unavailableBody:
       "Connect a provider to ask questions about the selected ticket's evidence.",
+  },
+  errors: {
+    network: "Unable to reach the investigation service.",
+    validation: "The request could not be completed. Check the entered information and try again.",
+    unauthorized: "You do not have permission to perform this action.",
+    not_found: "The requested record could not be found.",
+    conflict: "This record changed. Reload and try again.",
+    rate_limited: "Too many requests. Wait a moment and try again.",
+    server: "The service encountered a problem. Try again.",
+    unavailable: "The investigation service is unavailable. Check the connection and try again.",
+    malformed: "The service returned data in an unexpected format.",
   },
   locale: { label: "Language", en: "English", ar: "العربية" },
   hint: {
@@ -356,6 +368,17 @@ const ar: Dict = {
     unavailable: "المساعد غير مهيأ",
     unavailableBody: "اربط مزودًا لطرح أسئلة حول أدلة التذكرة المحددة.",
   },
+  errors: {
+    network: "تعذّر الاتصال بخدمة التحقيق.",
+    validation: "تعذّر إكمال الطلب. تحقق من المعلومات المدخلة ثم أعد المحاولة.",
+    unauthorized: "ليست لديك صلاحية لتنفيذ هذا الإجراء.",
+    not_found: "تعذّر العثور على السجل المطلوب.",
+    conflict: "تغيّر هذا السجل. أعد التحميل ثم حاول مجددًا.",
+    rate_limited: "تجاوزت عدد الطلبات المسموح به. انتظر قليلًا ثم أعد المحاولة.",
+    server: "واجهت الخدمة مشكلة. أعد المحاولة.",
+    unavailable: "خدمة التحقيق غير متاحة. تحقق من الاتصال ثم أعد المحاولة.",
+    malformed: "أعادت الخدمة بيانات بتنسيق غير متوقع.",
+  },
   locale: { label: "اللغة", en: "English", ar: "العربية" },
   hint: {
     sidebar: "إظهار/إخفاء الشريط الجانبي",
@@ -386,6 +409,15 @@ const ar: Dict = {
 }
 
 const dicts: Record<Locale, Dict> = { en, ar }
+
+/** Keep backend detail verbatim in English; show a localized summary in Arabic. */
+export function localizeApiError(
+  locale: Locale,
+  kind: ApiErrorKind,
+  fallback: string
+): string {
+  return locale === "ar" ? dicts.ar.errors[kind] : fallback
+}
 
 interface LocaleCtx {
   locale: Locale

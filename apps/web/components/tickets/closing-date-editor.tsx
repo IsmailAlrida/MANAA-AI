@@ -10,7 +10,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import { api, ApiError } from "@/lib/api/client"
 import type { Ticket } from "@/lib/api/types"
-import { useLocale } from "@/lib/i18n"
+import { localizeApiError, useLocale } from "@/lib/i18n"
 import { closingDateInitial, closingDateReducer } from "@/lib/machines/closing-date"
 import { useWorkspaceActions } from "@/lib/workspace/store"
 import { Hint } from "../hint"
@@ -24,7 +24,7 @@ function withDate(prevIso: string | null | undefined, day: Date): string {
 }
 
 export function ClosingDateEditor({ ticket }: { ticket: Ticket }) {
-  const { t, fmtDate } = useLocale()
+  const { t, fmtDate, locale } = useLocale()
   const { upsertTicket, reload } = useWorkspaceActions()
   const [s, send] = React.useReducer(closingDateReducer, closingDateInitial)
   const disabled = ticket.status === "closed"
@@ -43,7 +43,11 @@ export function ClosingDateEditor({ ticket }: { ticket: Ticket }) {
       .catch((e) => {
         if (cancelled) return
         const kind = e instanceof ApiError ? e.kind : "network"
-        send({ type: "FAILURE", kind, message: e instanceof Error ? e.message : String(e) })
+        send({
+          type: "FAILURE",
+          kind,
+          message: localizeApiError(locale, kind, e instanceof Error ? e.message : String(e)),
+        })
       })
     return () => {
       cancelled = true

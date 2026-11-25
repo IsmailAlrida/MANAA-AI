@@ -19,7 +19,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 
 import { api, ApiError, newIdempotencyKey } from "@/lib/api/client"
 import type { Ticket } from "@/lib/api/types"
-import { useLocale } from "@/lib/i18n"
+import { localizeApiError, useLocale } from "@/lib/i18n"
 import {
   closeTicketInitial,
   closeTicketReducer,
@@ -30,7 +30,7 @@ import { useWorkspaceActions } from "@/lib/workspace/store"
 import { Hint } from "../hint"
 
 export function CloseTicketDialog({ ticket }: { ticket: Ticket }) {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const { upsertTicket } = useWorkspaceActions()
   const [s, send] = React.useReducer(closeTicketReducer, closeTicketInitial)
 
@@ -49,7 +49,8 @@ export function CloseTicketDialog({ ticket }: { ticket: Ticket }) {
         if (cancelled) return
         const kind = e instanceof ApiError ? e.kind : "network"
         const fieldMsg = e instanceof ApiError ? e.fieldErrors?.finalWriteup : undefined
-        send({ type: "FAILURE", kind, message: fieldMsg ?? (e instanceof Error ? e.message : String(e)) })
+        const message = fieldMsg ?? (e instanceof Error ? e.message : String(e))
+        send({ type: "FAILURE", kind, message: localizeApiError(locale, kind, message) })
       })
     return () => {
       cancelled = true

@@ -1,0 +1,7 @@
+# Update deliberately with review. Exact package pin; no moving tag or install script.
+opencode_package=@opencode/cli
+opencode_version=2.4.1
+node_major=22
+node_version=22.23.2
+node_installer_n=10.2.0
+uv=0.9.14

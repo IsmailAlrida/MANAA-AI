@@ -1,0 +1,31 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "manaa/__MODEL_NAME__",
+  "provider": {
+    "manaa": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "MANAA private model endpoint",
+      "options": {
+        "baseURL": "{env:MANAA_MODEL_BASE_URL}",
+        "apiKey": "{env:MANAA_MODEL_API_KEY}"
+      },
+      "models": {
+        "__MODEL_NAME__": { "name": "MANAA private model" }
+      }
+    }
+  },
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "deny" }
+  ],
+  "agents": {
+    "manaa-review": {
+      "hidden": true,
+      "mode": "primary",
+      "model": "manaa/__MODEL_NAME__",
+      "steps": 1,
+      "permissions": [
+        { "action": "*", "resource": "*", "effect": "deny" }
+      ]
+    }
+  }
+}

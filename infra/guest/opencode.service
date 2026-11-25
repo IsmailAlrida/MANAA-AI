@@ -1,0 +1,28 @@
+[Unit]
+Description=MANAA pinned OpenCode service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=manaa
+Group=manaa
+EnvironmentFile=-/etc/manaa/runtime.env
+EnvironmentFile=-/etc/manaa/secrets.env
+EnvironmentFile=-/etc/manaa/model.env
+EnvironmentFile=-/etc/manaa/police.env
+EnvironmentFile=-/etc/manaa/osint.env
+WorkingDirectory=/opt/manaa/engine
+ExecStart=/usr/bin/env opencode serve --hostname 0.0.0.0 --port 4096
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/opt/manaa
+ReadWritePaths=/var/lib/manaa
+PrivateTmp=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=MANAA controlled demo pipeline (%i)
+After=network-online.target manaa-opencode.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=manaa
+Group=manaa
+WorkingDirectory=/opt/manaa/engine
+EnvironmentFile=/etc/manaa/%i.env
+ExecStart=/usr/local/bin/manaa-guest-runner %i run
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/opt/manaa
+ReadWritePaths=/var/lib/manaa
+PrivateTmp=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX

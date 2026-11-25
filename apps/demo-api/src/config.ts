@@ -10,6 +10,9 @@ export interface Config {
   fixturesDir: string
   stepMs: number
   demoControls: boolean
+  mode: "fixtures" | "engine"
+  guestExecPath: string
+  resultsUrl: string
   corsOrigin: string | undefined
 }
 
@@ -33,6 +36,12 @@ export function loadConfig(): Config {
       resolve(REPO_ROOT, "demo/fixtures/generated"),
     stepMs: int("DEMO_STEP_MS", 1500, 0),
     demoControls: process.env.DEMO_CONTROLS !== "off",
+    mode: process.env.MANAA_MODE === "engine" ? "engine" : "fixtures",
+    guestExecPath:
+      process.env.MANAA_GUEST_EXEC_PATH ||
+      resolve(REPO_ROOT, "infra/guest-exec.sh"),
+    resultsUrl:
+      process.env.MANAA_RESULTS_HTTP_URL || "http://10.77.20.1:8083/v1/results",
     corsOrigin: process.env.DEMO_CORS_ORIGIN || undefined,
   }
 }

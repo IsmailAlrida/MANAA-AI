@@ -2,19 +2,37 @@ import { serve } from "@hono/node-server"
 import {
   createApp,
   createBus,
+  createEngineAdapter,
   createFixtureAdapter,
   createRunner,
   openSqliteStore,
 } from "demo-api"
 import { config } from "./config.ts"
 
-// Swap this one line for a real agent adapter; nothing else changes.
-const adapter = createFixtureAdapter(config.fixturesDir)
-
-const { plan, sources } = await adapter.loadPlan()
+const fixtureAdapter =
+  config.mode === "fixtures" ? createFixtureAdapter(config.fixturesDir) : null
+const engineAdapter =
+  config.mode === "engine"
+    ? createEngineAdapter({
+        guestExecPath: config.guestExecPath,
+        resultsUrl: config.resultsUrl,
+      })
+    : null
+const { plan, sources } = fixtureAdapter
+  ? await fixtureAdapter.loadPlan()
+  : {
+      plan: { workspaceId: "workspace-controlled-case", steps: [] },
+      sources: engineAdapter!.sources,
+    }
 const store = openSqliteStore(config.dbPath)
 const bus = createBus((err) => console.error("[bus] listener failed", err))
-const runner = createRunner({ store, bus, plan, stepMs: config.stepMs })
+const runner = createRunner({
+  store,
+  bus,
+  plan,
+  stepMs: config.stepMs,
+  ...(engineAdapter ? { prepareRun: engineAdapter.prepareRun } : {}),
+})
 const app = createApp({
   store,
   runner,
@@ -31,7 +49,7 @@ const server = serve(
   { fetch: app.fetch, hostname: config.host, port: config.port },
   (info) => {
     console.log(
-      `[api] http://${info.address}:${info.port}/api/v1 · adapter ${adapter.name} · db ${config.dbPath}`
+      `[api] http://${info.address}:${info.port}/api/v1 · adapter ${engineAdapter?.name ?? fixtureAdapter?.name} · db ${config.dbPath}`
     )
   }
 )

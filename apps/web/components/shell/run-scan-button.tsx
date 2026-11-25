@@ -5,13 +5,13 @@ import { IconPlayerPause, IconPlayerPlay, IconRefresh, IconRepeat } from "@table
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useLocale } from "@/lib/i18n"
+import { localizeApiError, useLocale } from "@/lib/i18n"
 import { deriveRunButton, runButtonEnabled } from "@/lib/machines/run-scan"
 import { useWorkspace, useWorkspaceActions } from "@/lib/workspace/store"
 import { Hint } from "../hint"
 
 export function RunScanButton() {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const ws = useWorkspace()
   const { startRun } = useWorkspaceActions()
   const view = deriveRunButton(ws.load.tag, ws.runRequest, ws.run)
@@ -38,7 +38,14 @@ export function RunScanButton() {
     starting: t.hint.runBusy,
     running: t.hint.runBusy,
     complete: view.tag === "complete" && view.unchanged ? t.hint.runUnchanged : t.hint.runComplete,
-    failed: view.tag === "failed" ? view.message : undefined,
+    failed:
+      view.tag === "failed"
+        ? localizeApiError(
+            locale,
+            ws.runRequest.tag === "failed" ? ws.runRequest.kind : "server",
+            view.message
+          )
+        : undefined,
   }[view.tag]
 
   const busy =

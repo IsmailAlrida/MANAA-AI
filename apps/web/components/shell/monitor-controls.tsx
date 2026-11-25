@@ -4,11 +4,12 @@ import * as React from "react"
 import { IconPlayerPause, IconPlayerPlay } from "@tabler/icons-react"
 import { Button } from "@workspace/ui/components/button"
 
-import { useLocale } from "@/lib/i18n"
+import { ApiError } from "@/lib/api/client"
+import { localizeApiError, useLocale } from "@/lib/i18n"
 import { useWorkspace, useWorkspaceActions } from "@/lib/workspace/store"
 
 export function MonitorControls() {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const { run } = useWorkspace()
   const { pauseMonitor, resumeMonitor } = useWorkspaceActions()
   const [busy, setBusy] = React.useState(false)
@@ -22,7 +23,8 @@ export function MonitorControls() {
     try {
       await action()
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      const kind = e instanceof ApiError ? e.kind : "network"
+      setError(localizeApiError(locale, kind, e instanceof Error ? e.message : String(e)))
     } finally {
       setBusy(false)
     }

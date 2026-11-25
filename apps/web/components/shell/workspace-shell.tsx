@@ -17,7 +17,7 @@ import {
 } from "@workspace/ui/components/resizable"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
-import { useLocale } from "@/lib/i18n"
+import { localizeApiError, useLocale } from "@/lib/i18n"
 import { useWorkspace, useWorkspaceActions } from "@/lib/workspace/store"
 import { Hint } from "../hint"
 import { AgentPanel } from "./agent-panel"
@@ -28,7 +28,7 @@ import { RunScanButton } from "./run-scan-button"
 import { TopNav } from "./top-nav"
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
-  const { dir, t } = useLocale()
+  const { dir, t, locale } = useLocale()
   const ws = useWorkspace()
   const { setAgentPanel, reload } = useWorkspaceActions()
 
@@ -60,7 +60,9 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           {ws.load.tag === "error" && (
             <Alert variant="destructive">
               <AlertTitle>{t.load.error}</AlertTitle>
-              <AlertDescription>{ws.load.message}</AlertDescription>
+              <AlertDescription>
+                {localizeApiError(locale, "server", ws.load.message)}
+              </AlertDescription>
               <AlertAction>
                 <Button size="sm" variant="outline" onClick={reload}>
                   <IconRefresh />

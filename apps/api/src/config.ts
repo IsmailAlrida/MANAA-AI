@@ -24,5 +24,14 @@ export const config = {
   stepMs: int("API_STEP_MS", 1500, 0),
   /** POST /api/v1/demo/reset is a demo-only route; off for the real backend. */
   demoReset: process.env.API_DEMO_RESET === "on",
+  mode:
+    process.env.MANAA_MODE === "engine"
+      ? ("engine" as const)
+      : ("fixtures" as const),
+  guestExecPath:
+    process.env.MANAA_GUEST_EXEC_PATH ||
+    resolve(REPO_ROOT, "infra/guest-exec.sh"),
+  resultsUrl:
+    process.env.MANAA_RESULTS_HTTP_URL || "http://10.77.20.1:8083/v1/results",
   corsOrigin: process.env.API_CORS_ORIGIN || undefined,
 }

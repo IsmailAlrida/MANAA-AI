@@ -3,13 +3,26 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "start": "node scripts/launcher.mjs start",
+    "doctor": "node scripts/launcher.mjs doctor",
+    "doc": "node scripts/launcher.mjs doctor",
+    "host:setup": "node scripts/launcher.mjs host:setup",
+    "vm:provision": "node scripts/launcher.mjs vm:provision",
+    "node:provision": "node scripts/launcher.mjs node:provision",
+    "db:up": "node scripts/launcher.mjs db:up",
+    "transfer:start": "node scripts/launcher.mjs transfer:start",
+    "app:start": "node scripts/launcher.mjs app:start",
+    "status": "node scripts/launcher.mjs status",
+    "logs": "node scripts/launcher.mjs logs",
+    "stop": "node scripts/launcher.mjs stop",
     "build": "turbo build",
     "dev": "turbo dev --filter=web --filter=api",
     "dev:demo": "turbo dev --filter=web --filter=demo-api",
     "lint": "turbo lint",
     "format": "turbo format",
     "typecheck": "turbo typecheck",
-    "test": "turbo test"
+    "test": "turbo test",
+    "test:launcher": "node --test tests/launcher/*.test.mjs"
   },
   "devDependencies": {
     "@workspace/eslint-config": "*",
